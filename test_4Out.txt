@@ -1,0 +1,3 @@
+Enter a string: 
+The string is: "a	ba"
+The string is a palindrome.
