@@ -1,0 +1,3 @@
+Enter one number: 
+The number is: "255"
+The count of zero is: "0"
