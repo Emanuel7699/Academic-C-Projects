@@ -4,8 +4,14 @@
 int main()
 {
 	char s[80];
+	int i = 0;
+	int c;
 	printf("Enter a string: \n");
-	fgets(s, sizeof(s), stdin);
+	while ((c = getchar()) && c != '\n' && i < sizeof(s) - 1 && c != EOF)
+	{
+        	s[i++] = c;
+    	}
+    	s[i] = '\0';
 	if (s[strlen(s)-1] == '\n'){s[strlen(s)-1] = '\0';}
 	printf("The string is: \"%s\"\n", s);
 
