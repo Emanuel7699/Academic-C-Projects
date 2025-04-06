@@ -1,1 +1,1 @@
-int count_zero_bits (int num);
+unsigned int count_zero_bits (unsigned int num);

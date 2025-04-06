@@ -1,3 +1,0 @@
-Enter one number: 
-The number is: "256"
-The count of zero is: "8"
