@@ -17,7 +17,7 @@ int main (int argc, char *file[])
 	in1 = fopen(file[1], "r");
 	in2 = fopen(file[2], "r");
 	
-	if (argc == 1){
+	if (argc == 1){/*If there is no file.*/
 		printf("enter some numbers\n");
 
 		while (scanf("%d", &num) != EOF){
@@ -31,8 +31,8 @@ int main (int argc, char *file[])
 			free(text);
 		}
 	}
-	else if(argc == 2){
-		if (in1 == NULL){
+	else if(argc == 2){/*If there is no input file.*/
+		if (in1 == NULL){/*If the file is incorrect.*/
 			fprintf(stderr,"ERROR: the file incorrrect or can't be opened\n");
 			return 0;
 		}
@@ -45,8 +45,12 @@ int main (int argc, char *file[])
 		}
 		fclose(in1);
 	}
-	else{
-		if (in2 == NULL){
+	else{/* If there is no output file.*/
+		if (in1 == NULL){/*If the file is incorrect.*/
+			fprintf(stderr,"ERROR: the file incorrrect or can't be opened\n");
+			return 0;
+		}
+		if (in2 == NULL){/*If the file is incorrect.*/
 			fprintf(stderr,"ERROR: the file incorrrect or can't be opened\n");
 			return 0;
 		}
