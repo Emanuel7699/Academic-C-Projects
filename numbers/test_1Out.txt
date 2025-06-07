@@ -1,0 +1,12 @@
+the numbers is:
+one
+five
+two
+four
+five
+six
+nine
+ninety nine
+fifty
+zero
+eight
