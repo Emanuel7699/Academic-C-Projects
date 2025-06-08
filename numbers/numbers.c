@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include "numbers.h"
 
-int main (int argc, char *file[])
+int main (int argc, char *argv[])
 {
 	int num=0,i=0;
 	FILE *in1 = NULL;
@@ -14,8 +14,8 @@ int main (int argc, char *file[])
         fprintf(stderr,"Error: you insert more than 2 files.\n");
         return 1;
     }
-	in1 = fopen(file[1], "r");
-	in2 = fopen(file[2], "r");
+	in1 = fopen(argv[1], "r");
+	in2 = fopen(argv[2], "r");
 	
 	if (argc == 1){/*If there is no file.*/
 		printf("enter some numbers\n");
@@ -55,7 +55,7 @@ int main (int argc, char *file[])
 			return 0;
 		}
 		fclose(in2);
-		in2 = fopen(file[2], "w");
+		in2 = fopen(argv[2], "w");
 		fprintf(in2,"the numbers is:\n");
 		while (fscanf(in1,"%d", &num) != EOF){
 			text = malloc(50);
