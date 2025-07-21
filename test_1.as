@@ -3,7 +3,7 @@ M1[r2][r7],LENGTH
 LOOP: jmp END
  prn #-5
 mcro a_mc
-mov M1[r3][r3],r3
+ mov M1[r3][r3],r3
  bne LOOP
 mcroend
  sub r1, r4

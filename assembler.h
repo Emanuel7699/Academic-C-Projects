@@ -1,2 +1,4 @@
 char *file_extension(char *filename, char *ending);
 int read_file(char *filename);
+int write_macro_to_file(FILE *in, FILE *temp_macro);
+int check_macro_in_file(char *line, FILE *temp_macro, FILE *out);

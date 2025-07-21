@@ -33,46 +33,23 @@ char *file_extension(char *filename, char *ending) {
 
 
 int read_file(char *filename){
-    int flag = 1;
     FILE *in = NULL, *out = NULL, *temp_macro = NULL;
-    char line[80],line_temp[80],macro_line[80];
+    char line[80];
     char *newfile = file_extension(filename,".am");
 
     in = fopen(filename, "r");
     out = fopen(newfile, "w");
     temp_macro = fopen("temp_macro.am", "w+");
 
-
     while (fgets(line, sizeof(line), in) != NULL) {
         if (strstr(line, "mcro") == NULL) {/*Not macro*/
-            rewind(temp_macro);
-            sprintf(macro_line, "mcro %s", line);
-
-            while (fgets(line_temp, sizeof(line_temp), temp_macro) != NULL) {
-                if (strstr(line_temp, macro_line) != NULL){/*if the line appear in "mcro line"*/
-                    flag = 0;
-                    while (fgets(line_temp, sizeof(line_temp), temp_macro) != NULL) {
-                        if (strstr(line_temp, "mcroend") != NULL) {
-                            break;
-                        }
-                        fputs(line_temp, out);
-                    }
-                    break;
-                }
-            }
-            if (flag){
-                fputs(line, out);
-            }
-            flag = 1;
+           if (check_macro_in_file(line, temp_macro, out)) {
+               fputs(line, out);
+           }
         }
         else {/*Macro*/
             fputs(line, temp_macro);
-            while (fgets(line, sizeof(line), in) != NULL) {
-                fputs(line, temp_macro);
-                if (strstr(line, "mcroend") != NULL) {
-                    break;
-                }
-            }
+            write_macro_to_file(in, temp_macro);
         }
     }
     fclose(temp_macro);
@@ -81,4 +58,37 @@ int read_file(char *filename){
     free(newfile);
     remove("temp_macro.am");
     return 0;
+}
+
+int write_macro_to_file(FILE *in, FILE *temp_macro) {
+    char line[80];
+
+    while (fgets(line, sizeof(line), in) != NULL) {
+        fputs(line, temp_macro);
+        if (strstr(line, "mcroend") != NULL) {
+            break;
+        }
+    }
+    return 0;
+}
+
+int check_macro_in_file(char *line, FILE *temp_macro, FILE *out) {
+    char line_temp[80];
+    char macro_line[80];
+
+    rewind(temp_macro);
+    sprintf(macro_line, "mcro %s", line);
+
+    while (fgets(line_temp, sizeof(line_temp), temp_macro) != NULL) {
+        if (strstr(line_temp, macro_line) != NULL) {
+            while (fgets(line_temp, sizeof(line_temp), temp_macro) != NULL) {
+                if (strstr(line_temp, "mcroend") != NULL) {
+                    break;
+                }
+                fputs(line_temp, out);
+            }
+            return 0; /* Macro found and expanded */
+        }
+    }
+    return -1; /* Macro not found */
 }
