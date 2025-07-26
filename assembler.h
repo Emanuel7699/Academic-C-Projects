@@ -4,3 +4,4 @@ int write_macro_to_file(FILE *in, FILE *temp_macro);
 int check_macro_in_file(char *line, FILE *temp_macro, FILE *out);
 int check_macro(char *line, int i);
 int check_duplicate_macro(char *linem, FILE *temp_macro);
+void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile);
