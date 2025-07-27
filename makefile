@@ -5,5 +5,7 @@ assembler.o: assembler.c
 	gcc -ansi -Wall -pedantic -c assembler.c
 macros.o: macros.c
 	gcc -ansi -Wall -pedantic -c macros.c
+firstPass.o: TEST.c
+	gcc -ansi -Wall -pedantic -c firstPass.c
 clean:
 	rm *.o assembler

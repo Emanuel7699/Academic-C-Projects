@@ -10,13 +10,13 @@ int read_file(char *filename) {
     int len;
     char *newfile = file_extension(filename,".am");
 
-    in = fopen(filename, "r");
-    out = fopen(newfile, "w");
-    temp_macro = fopen("temp_macro.am", "w+");
+    in = fopen(filename, "w");
     if (!in) {/*if the input file can't be open*/
         fprintf(stderr, "Error: Cannot open input file\n");
         return 1;
     }
+    out = fopen(newfile, "w");
+    temp_macro = fopen("temp_macro.am", "w+");
 
     while (fgets(line, sizeof(line), in) != NULL) {
         len = strlen(line);
@@ -134,8 +134,9 @@ int check_duplicate_macro(char *line, FILE *temp_macro) {
 
 /*close files*/
 void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
-    if (temp_macro) {fclose(temp_macro); remove("temp_macro.am");}
-    if (in) fclose(in);
-    if (out) fclose(out);
-    if (newfile) free(newfile);
+    fclose(in);
+    fclose(out);
+    free(newfile);
+    fclose(temp_macro);
+    remove("temp_macro.am");
 }

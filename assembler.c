@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "assembler.h"
+#include "TEST.h"
 
 /*The main function that receive files and return the file with macros*/
 int main (int argc, char *argv[]) {
@@ -11,7 +12,9 @@ int main (int argc, char *argv[]) {
     while (--argc > 0) {
         i++;
         file = file_extension(argv[i], ".as");
-        read_file(file);
+        if (!read_file(file)) {
+            first_pass(file);
+        }
         free(file);
     }
     return 0;
