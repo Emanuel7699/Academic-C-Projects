@@ -10,7 +10,7 @@ int read_file(char *filename) {
     int len;
     char *newfile = file_extension(filename,".am");
 
-    in = fopen(filename, "w");
+    in = fopen(filename, "r");
     if (!in) {/*if the input file can't be open*/
         fprintf(stderr, "Error: Cannot open input file\n");
         return 1;
@@ -138,5 +138,5 @@ void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
     fclose(out);
     free(newfile);
     fclose(temp_macro);
-    remove("temp_macro.am");
+    /*remove("temp_macro.am");*/
 }

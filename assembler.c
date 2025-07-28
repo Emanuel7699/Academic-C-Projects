@@ -2,7 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "assembler.h"
-#include "TEST.h"
+#include "firstPass.h"
 
 /*The main function that receive files and return the file with macros*/
 int main (int argc, char *argv[]) {

@@ -11,28 +11,43 @@ int first_pass(char *filename) {
 	int label_count = 0;
 	char label_name[31];
 	char command[31];
+	char *temp;
 
 	FILE *in = NULL, *out = NULL;
-	in = fopen(file_extension(filename,".am"), "r");
-	out = fopen(file_extension(filename,".ob"), "w");
+
+	char *input_name = file_extension(filename, ".am");
+	char *output_name = file_extension(filename, ".ob");
+
+	in = fopen(input_name, "r");
+	out = fopen(output_name, "w");
 
 	while (fgets(line, sizeof(line), in) != NULL) {
+
 		strcpy(line_copy, line);
 		if (strncmp(line, ";", 1) == 0) {/*if there is a comment line*/
 			continue;
 		}
 
 		if (strchr(line, ':')) {/*if there is a label*/
+
 			if (strstr(line,".entry")) continue;
 			strcpy(label_name, strtok(line_copy, ":"));
-			strcpy(command, strtok(NULL, " \t"));
+			strcpy(command, strtok(NULL, " \t\n"));
+			printf("%s\t", command);
 			check_command(symbol_table, &label_count, label_name,  command, DC, IC);
 		}
 		else {
-			strcpy(command, strtok(line_copy, " \t"));
+			strcpy(command, strtok(line_copy, " \t\n"));
+			printf("%s\t", command);
 		}
-		strcpy(total_line, strtok(NULL, "\n"));
-
+		temp = strtok(NULL, "\n");
+		if (temp != NULL) {
+			strcpy(total_line, temp);
+		}
+		else {
+			total_line[0] = '\0';
+		}
+		printf("%s\n", total_line);
 
 		if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
 			process_data_directive(command, total_line, &DC);
@@ -61,6 +76,7 @@ int first_pass(char *filename) {
 	return 0;
 }
 
+
 void add_label(Label symbol_table[], int *num_labels, char *name, int address, char *type, char *attribute) {
 	strcpy(symbol_table[*num_labels].name, name);
 	symbol_table[*num_labels].address = address;
@@ -69,7 +85,10 @@ void add_label(Label symbol_table[], int *num_labels, char *name, int address, c
 	(*num_labels)++;
 }
 
+
 void check_command(Label symbol_table[], int *num_labels, char *label_name, char *command, int DC, int IC) {
+	/*printf("%s\n",command);*/
+	remove_spaces(command);
 	if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
 		add_label(symbol_table, num_labels, label_name, DC, "data", "");
 	}
@@ -80,6 +99,7 @@ void check_command(Label symbol_table[], int *num_labels, char *label_name, char
 		add_label(symbol_table, num_labels, label_name, IC, "code", "");
 	}
 }
+
 
 int check_data(char *command) {
 	if (strcmp(command, "mov") ||
@@ -102,6 +122,7 @@ int check_data(char *command) {
 	}
 	return 1;
 }
+
 
 int num_of_operands(char *command) {
 	if (strcmp(command, "mov") == 0 ||
@@ -126,7 +147,7 @@ int num_of_operands(char *command) {
 		strcmp(command, "stop") == 0){
 	return 0;
 	}
-	fprintf(stderr, "Error: There command is undefined\n");
+	fprintf(stderr, "Error: The command is undefined\n");
 	return  -1;
 }
 
@@ -165,15 +186,20 @@ void process_data_directive(char *directive, char *operands, int *DC) {
 	}
 }
 
+
 int count_words_for_instruction(char *command_name, char *total_line) {
+	/*printf("%s\n", command_name);*/
 
 	int count = 1;
 	int mode1 = -1, mode2 = -1;
 	char *operand1 = NULL, *operand2 = NULL;
 
+	if (total_line == NULL || strlen(total_line) == 0) {
+		return count;
+	}
 	if (num_of_operands(command_name) == 1) {
 		operand1 = NULL;
-		operand2 = strtok(NULL, "\n");
+		operand2 = strtok(total_line, "\n");
 	}
 	else if (num_of_operands(command_name) == 2) {
 		operand1 = strtok(total_line, ",");
@@ -200,7 +226,9 @@ int count_words_for_instruction(char *command_name, char *total_line) {
 	return count;
 }
 
+
 int get_addressing_mode(char *operand) {
+	remove_spaces(operand);
 	if (operand[0] == '#') {
 		return 0;
 	}
@@ -211,4 +239,16 @@ int get_addressing_mode(char *operand) {
 		return 3;
 	}
 	return 1;
+}
+
+
+void remove_spaces(char *str) {
+	char *src = str, *dst = str;
+	while (*src) {
+		if (*src != ' ' && *src != '\t') {
+			*dst++ = *src;
+		}
+		src++;
+	}
+	*dst = '\0';
 }
