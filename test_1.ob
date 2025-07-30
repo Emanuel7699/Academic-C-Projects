@@ -1,7 +1,7 @@
-MAIN 0 code 
-LOOP 7 code 
-END 22 code 
-STR 0 data 
-LENGTH 0 data 
-K 3 data 
-M1 4 data 
+MAIN 100 code 
+LOOP 107 code 
+END 121 code 
+STR 122 data 
+LENGTH 129 data 
+K 132 data 
+M1 133 data 

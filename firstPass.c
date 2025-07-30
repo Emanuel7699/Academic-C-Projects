@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
 #include "assembler.h"
 #include "firstPass.h"
 
 int first_pass(char *filename) {
-	int IC = 0, DC = 0, i=0;
+	int IC = 0, DC = 0;
 
+	Label *symbol_table_head = NULL;
 	char line[82], line_copy[82], total_line[82];
-	Label symbol_table[100];
-	int label_count = 0;
-	char label_name[31];
+	char label_name[32];
 	char command[31];
 	char *temp;
 
@@ -34,7 +34,7 @@ int first_pass(char *filename) {
 			strcpy(label_name, strtok(line_copy, ":"));
 			strcpy(command, strtok(NULL, " \t\n"));
 			printf("%s\t", command);
-			check_command(symbol_table, &label_count, label_name,  command, DC, IC);
+			check_command(&symbol_table_head, label_name,  command, DC, IC);
 		}
 		else {
 			strcpy(command, strtok(line_copy, " \t\n"));
@@ -52,7 +52,6 @@ int first_pass(char *filename) {
 		if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
 			process_data_directive(command, total_line, &DC);
 		}
-
 		else if (strcmp(command, ".extern") == 0) {
 			continue;
 		}
@@ -64,39 +63,46 @@ int first_pass(char *filename) {
 			IC += words;
 		}
 	}
-	for (i = 0; i < label_count; i++) {
-		fprintf(out, "%s %d %s %s\n",
-				symbol_table[i].name,
-				symbol_table[i].address,
-				symbol_table[i].type,
-				symbol_table[i].attribute);
-	}
+
+	print_label_list(symbol_table_head,out);
+	free_label_list(symbol_table_head);
 	fclose(in);
 	fclose(out);
 	return 0;
 }
 
 
-void add_label(Label symbol_table[], int *num_labels, char *name, int address, char *type, char *attribute) {
-	strcpy(symbol_table[*num_labels].name, name);
-	symbol_table[*num_labels].address = address;
-	strcpy(symbol_table[*num_labels].type, type);
-	strcpy(symbol_table[*num_labels].attribute, attribute);
-	(*num_labels)++;
+void add_label(Label **head, char *name, int address, char *type, char *attribute) {
+	Label *new_label = (Label *)malloc(sizeof(Label));
+	strcpy(new_label->name, name);
+	new_label->address = address;
+	strcpy(new_label->type, type);
+	strcpy(new_label->attribute, attribute);
+	new_label->next = NULL;
+
+	if (*head == NULL) {
+		*head = new_label;
+	} else {
+		Label *ptr = *head;
+		while (ptr->next != NULL) {
+			ptr = ptr->next;
+		}
+		ptr->next = new_label;
+	}
 }
 
 
-void check_command(Label symbol_table[], int *num_labels, char *label_name, char *command, int DC, int IC) {
+void check_command(Label **head, char *label_name, char *command, int DC, int IC) {
 	/*printf("%s\n",command);*/
 	remove_spaces(command);
 	if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
-		add_label(symbol_table, num_labels, label_name, DC, "data", "");
+		add_label(head, label_name, DC+IC, "data", "");
 	}
 	else if (strcmp(command, ".extern") == 0) {
-		add_label(symbol_table, num_labels, label_name, 0, "extern", "extern");
+		add_label(head, label_name, 0, "extern", "extern");
 	}
 	else if (!check_data(command)) {
-		add_label(symbol_table, num_labels, label_name, IC, "code", "");
+		add_label(head, label_name, IC+DC, "code", "");
 	}
 }
 
@@ -207,22 +213,29 @@ int count_words_for_instruction(char *command_name, char *total_line) {
 	}
 	if (operand1 != NULL) {
 		mode1 = get_addressing_mode(operand1);
-		if (mode1 == 2)
+		if (mode1 == 2) {
 			count += 2;
-		else if (mode1 == 3)
+		}
+		else if (mode1 == 3) {
 			count += 1;
-		else
+		}
+		else {
 			count += 1;
+		}
 	}
 	if (operand2 != NULL) {
 		mode2 = get_addressing_mode(operand2);
-		if (mode2 == 2)
+		if (mode2 == 2){
 			count += 2;
-		else if (mode2 == 3 && mode1 == 3)
-			count -= 1;
-		else
+		}
+		else if (mode2 == 3 && mode1 == 3) {
+			count += 0;
+		}
+		else {
 			count += 1;
+		}
 	}
+	printf("%d\t", count);
 	return count;
 }
 
@@ -245,10 +258,31 @@ int get_addressing_mode(char *operand) {
 void remove_spaces(char *str) {
 	char *src = str, *dst = str;
 	while (*src) {
-		if (*src != ' ' && *src != '\t') {
+		if (*src != ' ' && *src != '\t' && *src != '\n' && *src != '\r') {
 			*dst++ = *src;
 		}
 		src++;
 	}
 	*dst = '\0';
+}
+
+void free_label_list(Label *symbol_table_head) {
+	Label *ptr = symbol_table_head;
+	while (ptr) {
+		Label *temp = ptr;
+		ptr = ptr->next;
+		free(temp);
+	}
+}
+
+void print_label_list(Label *symbol_table_head, FILE *out) {
+	Label *ptr = symbol_table_head;
+	while (ptr != NULL) {
+		fprintf(out, "%s %d %s %s\n",
+			ptr->name,
+			ptr->address + 100,
+			ptr->type,
+			ptr->attribute);
+		ptr = ptr->next;
+	}
 }
