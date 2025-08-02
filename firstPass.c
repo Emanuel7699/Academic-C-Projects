@@ -28,6 +28,10 @@ int first_pass(char *filename) {
 		if (strncmp(line, ";", 1) == 0) {/*if there is a comment line*/
 			continue;
 		}
+		remove_spaces(line);
+		if (line[0] == '\0') {
+			continue;
+		}
 
 		if (strchr(line, ':')) {/*if there is a label*/
 
@@ -51,7 +55,7 @@ int first_pass(char *filename) {
 		printf("%s\n", total_line);
 
 		if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
-			process_data_directive(command, total_line, &DC);
+			process_data_directive(&symbol_bin_code, command, total_line, &DC);
 		}
 		else if (strcmp(command, ".extern") == 0) {
 			continue;
@@ -73,7 +77,6 @@ int first_pass(char *filename) {
 	fclose(out);
 	return 0;
 }
-
 
 void add_label(Label **head, char *name, int address, char *type, char *attribute) {
 	Label *new_label = (Label *)malloc(sizeof(Label));
@@ -110,9 +113,8 @@ void Bin_line(BinCode **head, char *name) {
 	}
 }
 
-
 void check_command(Label **head, char *label_name, char *command, int DC, int IC) {
-	/*printf("%s\n",command);*/
+	char temp[10];
 	remove_spaces(command);
 	if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
 		add_label(head, label_name, DC+IC, "data", "");
@@ -120,50 +122,25 @@ void check_command(Label **head, char *label_name, char *command, int DC, int IC
 	else if (strcmp(command, ".extern") == 0) {
 		add_label(head, label_name, 0, "extern", "extern");
 	}
-	else if (num_of_operands(command) !=-1) {
+	else if (opcode(command,temp) !=-1) {
 		add_label(head, label_name, IC+DC, "code", "");
 	}
 }
 
-
-int num_of_operands(char *command) {
-	if (strcmp(command, "mov") == 0 ||
-		strcmp(command, "cmp") == 0 ||
-		strcmp(command, "add") == 0 ||
-		strcmp(command, "sub") == 0 ||
-		strcmp(command, "lea") == 0){
-	return 2;
-	}
-	else if (strcmp(command, "clr") == 0 ||
-		strcmp(command, "not") == 0 ||
-		strcmp(command, "inc") == 0 ||
-		strcmp(command, "dec") == 0 ||
-		strcmp(command, "jmp") == 0 ||
-		strcmp(command, "bne") == 0 ||
-		strcmp(command, "jsr") == 0 ||
-		strcmp(command, "red") == 0 ||
-		strcmp(command, "prn") == 0){
-	return 1;
-	}
-	else if (strcmp(command, "rts") == 0 ||
-		strcmp(command, "stop") == 0){
-	return 0;
-	}
-	fprintf(stderr, "Error: The command is undefined\n");
-	return  -1;
-}
-
-
-void process_data_directive(char *directive, char *operands, int *DC) {
+void process_data_directive(BinCode **symbol_bin_code, char *directive, char *operands, int *DC) {
+	char *name = (char *)malloc(11 * sizeof(char));
 	char operands_copy[82];
+	char ascii[12];
 	char *token;
 	int i;
+	name[0] = '\0';
 	if (strcmp(directive, ".data") == 0) {
 		strcpy(operands_copy, operands);
 
 		token = strtok(operands_copy, ",\t\n");
 		while (token != NULL) {
-			/*//////////////////////////////////////////////שליחה לקוד שימיר לבינארי//*/
+			dec_to_bin(token,name,10);
+			Bin_line(symbol_bin_code, name);
 			(*DC)++;
 			token = strtok(NULL, ",\t\n");
 		}
@@ -172,11 +149,14 @@ void process_data_directive(char *directive, char *operands, int *DC) {
 		if (operands[0] == '\"') {
 			int length = 0;
 			for (i=1; operands[i] != '\"' && operands[i] != '\0'; i++) {
-				/*////////////////////////////////////////////////////////////////שליחה לקוד שימיר תוי אסקי לבינארי///*/
+				sprintf(ascii, "%d", (int)operands[i]);
+				dec_to_bin(ascii,name,10);
+				Bin_line(symbol_bin_code, name);
 				length++;
 			}
 			(*DC) += (length + 1);
-			/*//////////////////////////////////////////////////////////,\0,מילוי אפסים////////*/
+			strcpy(name,"0000000000");
+			Bin_line(symbol_bin_code, name);
 		}
 	}
 	else if (strcmp(directive, ".mat") == 0) {
@@ -185,37 +165,39 @@ void process_data_directive(char *directive, char *operands, int *DC) {
 		token = strtok(operands_copy, " \t\n");
 		if (token != NULL) token = strtok(NULL, ",");
 		while (token != NULL) {
-			/*///////////////////////////////////////////////////////////////////////*/
+			dec_to_bin(token,name,10);
+			Bin_line(symbol_bin_code, name);
 			(*DC)++;
 			token = strtok(NULL, ",\n");
 		}
 	}
+	free(name);
 }
-
 
 int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, char *total_line) {
 	char *name = (char *)malloc(11 * sizeof(char));
 	int count = 1;
-	int mode1 = -1, mode2 = -1;
+	int type = -1, mode1 = -1, mode2 = -1;
 	char *operand1 = NULL, *operand2 = NULL;
 	char line_copy[82];
-	name[0] = '\0';
 	strcpy(line_copy, total_line);
-	opcode(command_name,name);
+	type = opcode(command_name,name);
+
+	if (strcmp(name,"1110") ==0 || strcmp(name,"1111") ==0) {
+		strcat(name, "000000");
+		Bin_line(symbol_bin_code, name);
+	}
 
 	if (total_line == NULL || strlen(total_line) == 0) {
 		return count;
 	}
-	if (num_of_operands(command_name) == 1) {
+	if (type == 1) {
 		operand1 = NULL;
 		operand2 = strtok(line_copy, "\n");
 	}
-	else if (num_of_operands(command_name) == 2) {
+	else if (type == 2) {
 		operand1 = strtok(line_copy, ",");
 		operand2 = strtok(NULL, "\n");
-	}
-	else if (num_of_operands(command_name) == 0){
-		printf("%s\n", name);
 	}
 
 
@@ -273,17 +255,14 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		else {
 			strcat(name, "00");
 		}
-
-
-		strcat(name, "00");
-		Bin_line(symbol_bin_code,name);
-		check_bin(symbol_bin_code,operand1,operand2);
-		free(name);
-		printf("%d\t", count);
 	}
+	strcat(name, "00");
+	Bin_line(symbol_bin_code,name);
+	check_bin(symbol_bin_code,operand1,operand2);
+	printf("%d\t", count);
+	free(name);
 	return count;
 }
-
 
 int get_addressing_mode(char *operand) {
 	if (operand[0] == '#') {
@@ -297,7 +276,6 @@ int get_addressing_mode(char *operand) {
 	}
 	return 1;
 }
-
 
 void remove_spaces(char *str) {
 	char *src = str, *dst = str;
@@ -349,6 +327,7 @@ void free_bin_list(BinCode *head) {
 }
 
 char opcode(char *command, char *name) {/*the first line with the command*/
+	name[0] = '\0';
 	if (strcmp(command, "mov")==0) {strcat(name, "0000"); return 2;}
 	if (strcmp(command, "cmp")==0) {strcat(name, "0001"); return 2;}
 	if (strcmp(command, "add")==0) {strcat(name, "0010"); return 2;}
@@ -358,6 +337,7 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 	if (strcmp(command, "not")==0) {strcat(name, "0110"); return 1;}
 	if (strcmp(command, "inc")==0) {strcat(name, "0111"); return 1;}
 	if (strcmp(command, "dec")==0) {strcat(name, "1000"); return 1;}
+	if (strcmp(command, "jmp")==0) {strcat(name, "1001"); return 1;}
 	if (strcmp(command, "bne")==0) {strcat(name, "1010"); return 1;}
 	if (strcmp(command, "jsr")==0) {strcat(name, "1011"); return 1;}
 	if (strcmp(command, "red")==0) {strcat(name, "1100"); return 1;}
@@ -368,7 +348,7 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 	return -1;
 }
 
-	char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
+char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 	char *temp = (char *)malloc(11 * sizeof(char));
 	char *name = (char *)malloc(11 * sizeof(char));
 	char *name1 = (char *)malloc(11 * sizeof(char));
@@ -443,7 +423,6 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 				Bin_line(symbol_bin_code,name);
 			}
 			else {
-				printf("operand2=%s\n",operand2+1);
 				dec_to_bin(operand2+1, temp, 4);
 				strcat(name, "0000");
 				strcat(name, temp);
@@ -457,7 +436,6 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 	free(name1);
 	return 1;
 }
-
 
 void dec_to_bin(char *decimal_str, char *binary_str, int bits) {
 	int num = atoi(decimal_str);
