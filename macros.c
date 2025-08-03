@@ -23,6 +23,7 @@ int read_file(char *filename) {
         len = strlen(line);
         if ((len > 80) || (len == 80 && line[len-1] != '\n')) {
             fprintf(stderr, "Error: Line too long (more than 80 characters)\n");
+            remove(newfile);
             close_files(in, out, temp_macro, newfile);
             return 1;
         }
@@ -38,16 +39,25 @@ int read_file(char *filename) {
         }
         else {/*If the line is a macro*/
             if (check_macro(line, 1)) {
+                remove(newfile);
                 close_files(in, out, temp_macro, newfile);
                 return 1;
             }
             if (check_duplicate_macro(line, temp_macro)) {
-                close_files(in,out, temp_macro, newfile);
+                remove(newfile);
+                close_files(in, out, temp_macro, newfile);
                 return 1;
             }
+            if (check_instruction(line)) {
+                remove(newfile);
+                close_files(in, out, temp_macro, newfile);
+                return 1;
+            }
+
             fputs(line, temp_macro);
             if (write_macro_to_file(in, temp_macro)) {
                 close_files(in, out, temp_macro, newfile);
+                remove(newfile);
                 return 1;
             }
         }
@@ -133,11 +143,39 @@ int check_duplicate_macro(char *line, FILE *temp_macro) {
     return 0;
 }
 
+int check_instruction(char *macro) {
+    if (strstr(macro, "mov") != NULL ||
+        strstr(macro, "cmp") != NULL ||
+        strstr(macro, "add") != NULL ||
+        strstr(macro, "sub") != NULL ||
+        strstr(macro, "lea") != NULL ||
+        strstr(macro, "clr") != NULL ||
+        strstr(macro, "not") != NULL ||
+        strstr(macro, "inc") != NULL ||
+        strstr(macro, "dec") != NULL ||
+        strstr(macro, "jmp") != NULL ||
+        strstr(macro, "bne") != NULL ||
+        strstr(macro, "jsr") != NULL ||
+        strstr(macro, "red") != NULL ||
+        strstr(macro, "prn") != NULL ||
+        strstr(macro, "rts") != NULL ||
+        strstr(macro, "stop") != NULL ||
+        strstr(macro, "data") != NULL ||
+        strstr(macro, "string") != NULL ||
+        strstr(macro, "mat") != NULL ||
+        strstr(macro, "extern") != NULL ||
+        strstr(macro, "entry") != NULL) {
+        fprintf(stderr, "Error: The command is instruction\n");
+        return 1;
+        }
+    return  0;
+}
+
 /*close files*/
 void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
     fclose(in);
     fclose(out);
     free(newfile);
     fclose(temp_macro);
-    /*remove("temp_macro.am");*/
+    remove("temp_macro.am");
 }
