@@ -7,7 +7,7 @@
 
 int first_pass(char *filename) {
 	int IC = 0, DC = 0;
-
+	int lineNumber = 1;
 	Label *symbol_table_head = NULL;
 	BinCode *symbol_bin_code = NULL;
 	char line[82], line_copy[82], total_line[82];
@@ -15,13 +15,14 @@ int first_pass(char *filename) {
 	char command[31];
 	char *temp;
 
-	FILE *in = NULL, *out = NULL;
+	FILE *in = NULL, *out = NULL, *temp_macro = NULL;
 
 	char *input_name = file_extension(filename, ".am");
 	char *output_name = file_extension(filename, ".ob");
 
 	in = fopen(input_name, "r");
 	out = fopen(output_name, "w");
+	temp_macro = fopen("temp_macro.am", "r");
 
 	while (fgets(line, sizeof(line), in) != NULL) {
 
@@ -35,17 +36,21 @@ int first_pass(char *filename) {
 		}
 
 		if (strchr(line, ':')) {/*if there is a label*/
-
 			if (strstr(line,".entry")) continue;
 			strcpy(label_name, strtok(line_copy, ":"));
+			if (check_duplicate_macro("mcro", label_name, temp_macro)) {
+				fprintf(stderr, "Error: in line %d- some label named as macro name\n", lineNumber);
+                return 1;
+            }
 			strcpy(command, strtok(NULL, " \t\n"));
 			printf("%s\t", command);
-			check_command(&symbol_table_head, label_name,  command, DC, IC);
+			check_command(&symbol_table_head, label_name, command, DC, IC);
 		}
 		else {
 			strcpy(command, strtok(line_copy, " \t\n"));
 			printf("%s\t", command);
 		}
+
 		temp = strtok(NULL, "\n");
 		if (temp != NULL) {
 			strcpy(total_line, temp);
@@ -65,9 +70,10 @@ int first_pass(char *filename) {
 			continue;
 		}
 		else {
-			int words = count_words_for_instruction(&symbol_bin_code, command, total_line);
+			int words = count_words_for_instruction(&symbol_bin_code, command, total_line, lineNumber);
 			IC += words;
 		}
+	lineNumber++;
 	}
 
 	print_label_list(symbol_table_head,out);
@@ -140,14 +146,18 @@ void process_data_directive(BinCode **symbol_bin_code, char *directive, char *op
 	free(name);
 }
 
-int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, char *total_line) {
+int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, char *total_line, int lineNumber) {
 	char *name = (char *)malloc(11 * sizeof(char));
 	int count = 1;
 	int type = -1, mode1 = -1, mode2 = -1;
-	char *operand1 = NULL, *operand2 = NULL;
+	char *operand1 = NULL, *operand2 = NULL, *operandExtra = NULL;
 	char line_copy[82];
 	strcpy(line_copy, total_line);
 	type = opcode(command_name,name);
+	if (type == -1) {
+		fprintf(stderr, "Error: in line %d- The command is undefined\n", lineNumber);
+	return 1;
+	}
 
 	if (strcmp(name,"1110") ==0 || strcmp(name,"1111") ==0) {
 		strcat(name, "000000");
@@ -159,11 +169,21 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	}
 	if (type == 1) {
 		operand1 = NULL;
-		operand2 = strtok(line_copy, "\n");
+		operand2 = strtok(line_copy, ", \t\n");
+		operandExtra = strtok(NULL, ",\t\n");
 	}
 	else if (type == 2) {
 		operand1 = strtok(line_copy, ",");
-		operand2 = strtok(NULL, "\n");
+		operand2 = strtok(NULL, ", \t\n");
+		operandExtra = strtok(NULL, ",\t\n");
+	}
+	else if (type == 0) {
+		operandExtra = strtok(line_copy, ",\t\n");
+	}
+
+	if (operandExtra != NULL) {
+		fprintf(stderr, "Error: in line %d- There is extra operand\n", lineNumber);
+		return 1;
 	}
 
 
@@ -172,6 +192,9 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		remove_spaces(operand1);
 		mode1 = get_addressing_mode(operand1);
 		if (mode1 == 0){
+			if(!check_digit(operand1, 0, lineNumber)){
+				return 1;
+			}
 			strcat(name, "00");
 			count += 1;
 		}
@@ -180,10 +203,16 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 			count += 1;
 		}
 		else if (mode1 == 2) {
+			if(!check_digit(operand1, 2, lineNumber)){
+				return 1;
+			}
 			strcat(name, "10");
 			count += 2;
 		}
 		else if (mode1 == 3) {
+			if(!check_digit(operand1, 3, lineNumber)){
+				return 1;
+			}
 			strcat(name, "11");
 			count += 1;
 		}
@@ -197,6 +226,9 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		remove_spaces(operand2);
 		mode2 = get_addressing_mode(operand2);
 		if (mode2 == 0) {
+			if(!check_digit(operand2, 0, lineNumber)){
+				return 1;
+			}
 			strcat(name, "00");
 			count += 1;
 		}
@@ -205,10 +237,16 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 			count += 1;
 		}
 		else if (mode2 == 2){
+			if(!check_digit(operand2, 2, lineNumber)){
+				return 1;
+			}
 			strcat(name, "10");
 			count += 2;
 		}
 		else if (mode2 == 3) {
+			if(!check_digit(operand2, 3, lineNumber)){
+				return 1;
+			}
 			if (mode2 == 3 && mode1 == 3) {
 				strcat(name, "11");
 				count += 0;
@@ -237,7 +275,7 @@ int get_addressing_mode(char *operand) {
 	if (strchr(operand, '[') != NULL && strchr(operand, ']') != NULL) {
 		return 2;
 	}
-	if (strncmp(operand, "r", 1) == 0 && strlen(operand) == 2 && operand[1] >= '0' && operand[1] <= '7') {
+	if (strchr(operand, 'r') != NULL) {
 		return 3;
 	}
 	return 1;

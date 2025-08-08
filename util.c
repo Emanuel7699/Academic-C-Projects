@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "firstPass.h"
 
 void add_label(Label **head, char *name, int address, char *type, char *attribute) {
@@ -105,7 +106,6 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 	if (strcmp(command, "prn")==0) {strcat(name, "1101"); return 1;}
 	if (strcmp(command, "rts")==0) {strcat(name, "1110"); return 0;}
 	if (strcmp(command, "stop")==0) {strcat(name, "1111"); return 0;}
-	fprintf(stderr, "Error: The command is undefined\n");
 	return -1;
 }
 
@@ -116,6 +116,8 @@ void dec_to_bin(char *decimal_str, char *binary_str, int bits) {
 	if (num < 0) {
 		num = (1 << bits) + num;
 	}
+	if{
+}
 
 	for (i = bits - 1; i >= 0; i--) {
 		binary_str[i] = (num & 1) ? '1' : '0';
@@ -123,4 +125,63 @@ void dec_to_bin(char *decimal_str, char *binary_str, int bits) {
 	}
 
 	binary_str[bits] = '\0';
+}
+
+int check_digit(char *operand, int i, int lineNumber){
+	if (i == 0){
+		int pointer = 1;
+		while (operand[pointer] != '\0') {
+			if (operand[pointer] < '0' || operand[pointer] > '9') {
+				if ((pointer != 1) || ((pointer == 1) && (operand[1] != '-' && operand[1] != '+'))) {
+					fprintf(stderr, "Error: in line %d- invalid number\n", lineNumber);
+				return 1;
+				}
+			}
+			pointer++;
+		}
+	return 0;
+	}
+
+	if(i==1){
+		int j = 0;
+		char *pointer;
+		for (j=0;j<2;j++){
+			pointer = strchr(operand, '[');
+			++pointer;
+			while (*pointer != ']') {
+				if (*pointer > '9' || *pointer < '0') {
+					fprintf(stderr, "Error: in line %d- There is no number in the types\n", lineNumber);
+				return 1;
+				}
+			pointer++;
+			}
+		}
+	return 0;
+	}
+
+	if(i==2){
+		int j = 0;
+		char *pointer = operand;
+		for (j=0;j<2;j++){
+			pointer = strchr(pointer, '[');
+			if (pointer == NULL || *(pointer+3) != ']'){
+				fprintf(stderr, "Error: in line %d- The matrix is incorrect\n", lineNumber);
+			return 1;
+			}
+			if ((*(pointer+1) != 'r') || *(pointer+2) < '0' || *(pointer+2) > '7'){
+				fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
+			return 1;
+			}
+		pointer++;
+		}
+	return 0;
+	}
+
+	if(i==3){
+		if (strncmp(operand, "r", 1) != 0 || strlen(operand) != 2 || operand[1] < '0' || operand[1] > '7') {
+			fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
+		return 1;
+		}
+	}
+return 1;
 }

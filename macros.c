@@ -7,6 +7,7 @@
 /*Expand the macros in the file*/
 int read_file(char *filename) {
     FILE *in = NULL, *out = NULL, *temp_macro = NULL;
+	char macro[10], macro_name[82];
     char line[82];
     int len;
     char *newfile = file_extension(filename,".am");
@@ -38,12 +39,14 @@ int read_file(char *filename) {
             }
         }
         else {/*If the line is a macro*/
+			sscanf(line, "%s %s", macro, macro_name);
             if (check_macro(line, 1)) {
                 remove(newfile);
                 close_files(in, out, temp_macro, newfile);
                 return 1;
             }
-            if (check_duplicate_macro(line, temp_macro)) {
+            if (check_duplicate_macro(macro, macro_name, temp_macro)) {
+				fprintf(stderr, "Error: Duplicate macros\n");
                 remove(newfile);
                 close_files(in, out, temp_macro, newfile);
                 return 1;
@@ -126,17 +129,16 @@ int check_macro(char *line, int i) {
             return 1;
         }
     }
-
     return 0;
 }
 
 /*duplicate macro*/
-int check_duplicate_macro(char *line, FILE *temp_macro) {
-    char line_temp[82];
+int check_duplicate_macro(char *macro, char *macro_name, FILE *temp_macro) {
+    char line_temp[82], macro_temp[82], macro_name_temp[82];
     rewind(temp_macro);
     while (fgets(line_temp, sizeof(line_temp), temp_macro) != NULL) {
-        if (strcmp(line_temp, line) == 0) {
-            fprintf(stderr, "Error: Duplicate macros\n");
+		sscanf(line_temp, "%s %s", macro_temp, macro_name_temp);
+		if (strcmp(macro, macro_temp) == 0 && strcmp(macro_name, macro_name_temp) == 0){
             return 1;
         }
     }
@@ -177,5 +179,36 @@ void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
     fclose(out);
     free(newfile);
     fclose(temp_macro);
-    remove("temp_macro.am");
+    /*remove("temp_macro.am");*/
 }
+
+
+
+
+
+
+
+
+/*int check_macro(char *line, int i) {
+    char macro[10], macro_name[82];
+    char *extra;
+
+    if (i == 1) {
+        sscanf(line, "%s %s", macro, macro_name);
+        extra = (strstr(line, macro_name) + strlen(macro_name));
+        if (strcmp(macro, "mcro") != 0 || (*extra != '\r' && *extra != '\n' && *extra != '\0')){
+            fprintf(stderr, "Error: Invalid macro definition line\n");
+            return 1;
+        }
+    }
+    if (i == 0) {
+        sscanf(line, "%s", macro);
+        extra = (strstr(line, macro) + strlen(macro));
+        if (*extra != '\r' && *extra != '\n' && *extra != '\0') {
+            fprintf(stderr, "Error: Invalid endmcro line\n");
+            return 1;
+        }
+    }
+
+    return 0;
+}*/
