@@ -52,6 +52,7 @@ int read_file(char *filename) {
                 return 1;
             }
             if (check_instruction(line)) {
+				fprintf(stderr, "Error: The command is instruction\n");
                 remove(newfile);
                 close_files(in, out, temp_macro, newfile);
                 return 1;
@@ -167,7 +168,6 @@ int check_instruction(char *macro) {
         strstr(macro, "mat") != NULL ||
         strstr(macro, "extern") != NULL ||
         strstr(macro, "entry") != NULL) {
-        fprintf(stderr, "Error: The command is instruction\n");
         return 1;
         }
     return  0;
@@ -181,34 +181,3 @@ void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
     fclose(temp_macro);
     /*remove("temp_macro.am");*/
 }
-
-
-
-
-
-
-
-
-/*int check_macro(char *line, int i) {
-    char macro[10], macro_name[82];
-    char *extra;
-
-    if (i == 1) {
-        sscanf(line, "%s %s", macro, macro_name);
-        extra = (strstr(line, macro_name) + strlen(macro_name));
-        if (strcmp(macro, "mcro") != 0 || (*extra != '\r' && *extra != '\n' && *extra != '\0')){
-            fprintf(stderr, "Error: Invalid macro definition line\n");
-            return 1;
-        }
-    }
-    if (i == 0) {
-        sscanf(line, "%s", macro);
-        extra = (strstr(line, macro) + strlen(macro));
-        if (*extra != '\r' && *extra != '\n' && *extra != '\0') {
-            fprintf(stderr, "Error: Invalid endmcro line\n");
-            return 1;
-        }
-    }
-
-    return 0;
-}*/

@@ -12,8 +12,11 @@ int main (int argc, char *argv[]) {
     while (--argc > 0) {
         i++;
         file = file_extension(argv[i], ".as");
+		printf("Open the %s file\n", file);
         if (!read_file(file)) {
-            first_pass(file);
+            if (first_pass(file)){
+				/*second_pass(file);*/
+			}
         }
         free(file);
     }

@@ -3,9 +3,18 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include "firstPass.h"
+#include "assembler.h"
 
-void add_label(Label **head, char *name, int address, char *type, char *attribute) {
+int add_label(Label **head, char *name, int address, char *type, char *attribute) {
+	Label *ptr = *head;
 	Label *new_label = (Label *)malloc(sizeof(Label));
+	while (ptr != NULL) {
+		if (strcmp(ptr->name, name) == 0) {
+			return 1;
+        }
+        ptr = ptr->next;
+    }
+
 	strcpy(new_label->name, name);
 	new_label->address = address;
 	strcpy(new_label->type, type);
@@ -21,6 +30,7 @@ void add_label(Label **head, char *name, int address, char *type, char *attribut
 		}
 		ptr->next = new_label;
 	}
+return 0;
 }
 
 void Bin_line(BinCode **head, char *name) {
@@ -112,12 +122,9 @@ char opcode(char *command, char *name) {/*the first line with the command*/
 void dec_to_bin(char *decimal_str, char *binary_str, int bits) {
 	int num = atoi(decimal_str);
 	int i;
-
 	if (num < 0) {
 		num = (1 << bits) + num;
 	}
-	if{
-}
 
 	for (i = bits - 1; i >= 0; i--) {
 		binary_str[i] = (num & 1) ? '1' : '0';
@@ -128,8 +135,13 @@ void dec_to_bin(char *decimal_str, char *binary_str, int bits) {
 }
 
 int check_digit(char *operand, int i, int lineNumber){
-	if (i == 0){
+int error = 0;
+	if (i==0){
 		int pointer = 1;
+		if (operand[1] == '\0') {
+			fprintf(stderr, "Error: in line %d- no number appears after #\n", lineNumber);
+		return 1;
+		}
 		while (operand[pointer] != '\0') {
 			if (operand[pointer] < '0' || operand[pointer] > '9') {
 				if ((pointer != 1) || ((pointer == 1) && (operand[1] != '-' && operand[1] != '+'))) {
@@ -142,7 +154,7 @@ int check_digit(char *operand, int i, int lineNumber){
 	return 0;
 	}
 
-	if(i==1){
+	if (i==1){
 		int j = 0;
 		char *pointer;
 		for (j=0;j<2;j++){
@@ -159,7 +171,7 @@ int check_digit(char *operand, int i, int lineNumber){
 	return 0;
 	}
 
-	if(i==2){
+	if (i==2){
 		int j = 0;
 		char *pointer = operand;
 		for (j=0;j<2;j++){
@@ -168,7 +180,7 @@ int check_digit(char *operand, int i, int lineNumber){
 				fprintf(stderr, "Error: in line %d- The matrix is incorrect\n", lineNumber);
 			return 1;
 			}
-			if ((*(pointer+1) != 'r') || *(pointer+2) < '0' || *(pointer+2) > '7'){
+			if (*(pointer+1) != 'r' || *(pointer+2) < '0' || *(pointer+2) > '7'){
 				fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
 			return 1;
 			}
@@ -177,11 +189,102 @@ int check_digit(char *operand, int i, int lineNumber){
 	return 0;
 	}
 
-	if(i==3){
+	if (i==3){
 		if (strncmp(operand, "r", 1) != 0 || strlen(operand) != 2 || operand[1] < '0' || operand[1] > '7') {
 			fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
 		return 1;
 		}
 	}
-return 1;
+
+	if (i==4){
+		int j = 0, ptr;
+		int numbers[2] = {0,0};
+		char number[sizeof(int)];
+		char *pointer = operand;
+		for (j=0;j<2;j++){
+			ptr = 0;
+			pointer = strchr(pointer, '[');
+			if (pointer == NULL || strchr(pointer, ']') == NULL) {
+				fprintf(stderr, "Error: in line %d - The matrix is incorrect\n", lineNumber);
+			return 1;
+			}
+			pointer++;
+			while (*pointer != ']' && *pointer != '\0' && *pointer != '\n' && *pointer != '\r'){
+				if (*pointer > '9' || *pointer < '0'){
+					fprintf(stderr, "Error: in line %d - The number is incorrect\n", lineNumber);
+				return 1;
+				}
+			number[ptr] = *pointer;
+			pointer++;
+			ptr++;
+			}
+			numbers[j] = atoi(number);
+			number[0] = '\0';
+			pointer++;
+		}
+	return numbers[0] * numbers[1];
+	}
+
+	if (i==5){
+		char *pointer = operand;
+		while (*pointer != '\n' && *pointer != '\0' && *pointer != '\r'){
+			if (*pointer == ','){
+				if (*(pointer+1) == ','){
+					fprintf(stderr, "Error: in line %d - Double comma\n", lineNumber);
+					error = 1;
+				}
+			}
+			else if (*pointer < '0' || *pointer > '9') {
+				if ((*(pointer-1) != ',') || ((*(pointer-1) == ',') && (*pointer != '-' && *pointer != '+'))) {
+					fprintf(stderr, "Error: in line %d - The number is incorrect\n", lineNumber);
+				error = 1;
+				}
+			}
+		pointer ++;
+		}
+		if (operand[0] == ',' || *(pointer-1) == ','){
+			fprintf(stderr, "Error: in line %d - The comma is not placed correctly\n", lineNumber);
+		error = 1;
+		}
+	error = 0;
+	if (error == 1){return 1;}
+	return 0;
+	}
+
+	if (i==6){
+		int len = strlen(operand);
+		char *pointer = operand;
+		if ((len > 32) || (len == 30 && operand[len-1] != '\n')) {
+            fprintf(stderr, "Error: in line %d - Label too long (more than 30 characters)\n", lineNumber);
+			error = 1;
+		}
+		if (check_instruction(operand) == 1){
+			fprintf(stderr, "Error: in line %d - The label is called an instruction or guideline\n", lineNumber);
+			error = 1;
+		}
+		if (isdigit(operand[0])){
+			fprintf(stderr, "Error: in line %d - There is number in first Label\n", lineNumber);
+			pointer++;
+			error = 1;
+		}
+		while (*pointer != '\0'){
+			if ((*pointer < 'A' || *pointer > 'Z') && (*pointer < 'a' || *pointer > 'z') && (*pointer < '0' || *pointer > '9')){
+				fprintf(stderr, "Error: in line %d - The label is incorrect\n", lineNumber);
+				error = 1;
+			}
+		pointer++;
+		}
+	error = 0;
+	if (error == 1){return 1;}
+	return 0;
+	}
+return 0;
 }
+
+int check_Addressing_Method(char *command_name, int operandNumber, int *mode){
+	if ((operandNumber == 1) && (strcmp(command_name, "lea") == 0) && (*mode == 0 || *mode == 3)) {return 1;}
+	else if ((operandNumber == 2) && !(((strcmp(command_name, "cmp") == 0) || (strcmp(command_name, "prn") == 0) || (strcmp(command_name, "rts") == 0) || (strcmp(command_name, "stop") == 0))) && (*mode == 0)) {return 1;}
+return 0;
+}
+
+

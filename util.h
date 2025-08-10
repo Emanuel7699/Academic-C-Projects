@@ -1,4 +1,4 @@
-void add_label(Label **head, char *name, int address, char *type, char *attribute);
+int add_label(Label **head, char *name, int address, char *type, char *attribute);
 void Bin_line(BinCode **head, char *name);
 void remove_spaces(char *str);
 void free_label_list(Label *symbol_table_head);
@@ -8,3 +8,4 @@ void free_bin_list(BinCode *head);
 char opcode(char *command, char *name);
 void dec_to_bin(char *decimal_str, char *binary_str, int bits);
 int check_digit(char *operand, int i, int lineNumber);
+int check_Addressing_Method(char *operand, int operandNumber, int *mode);
