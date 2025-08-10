@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include "assembler.h"
 #include "firstPass.h"
+
+#include "secondPass.h"
 #include "util.h"
 
 int first_pass(char *filename) {
@@ -90,6 +92,7 @@ int first_pass(char *filename) {
 		printf("The file %s colsed because of errors\n", input_name);
 	return 1;
 	}
+	second_pass(filename, &symbol_table_head, &symbol_bin_code);
 	return 0;
 }
 
@@ -312,7 +315,7 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	}
 	strcat(name, "00");
 	Bin_line(symbol_bin_code,name);
-	if (error == 0){check_bin(symbol_bin_code,operand1,operand2);}
+	if (*error == 0){check_bin(symbol_bin_code,operand1,operand2);}
 	printf("%d\t", count);
 	free(name);
 	return count;

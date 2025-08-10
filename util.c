@@ -246,7 +246,6 @@ int error = 0;
 			fprintf(stderr, "Error: in line %d - The comma is not placed correctly\n", lineNumber);
 		error = 1;
 		}
-	error = 0;
 	if (error == 1){return 1;}
 	return 0;
 	}
@@ -274,7 +273,6 @@ int error = 0;
 			}
 		pointer++;
 		}
-	error = 0;
 	if (error == 1){return 1;}
 	return 0;
 	}
