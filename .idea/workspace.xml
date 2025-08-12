@@ -24,13 +24,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3f94ef9-7e4d-4cb1-b9b1-0c64790e6100" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/assembly.iml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assembler" beforeDir="false" afterPath="$PROJECT_DIR$/assembler" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/assembler.c" beforeDir="false" afterPath="$PROJECT_DIR$/assembler.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/firstPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/firstPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.c" afterDir="false" />
@@ -40,8 +35,7 @@
       <change beforePath="$PROJECT_DIR$/test_1.am" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.am" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.as" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.as" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.ob" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.ob" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.c" beforeDir="false" afterPath="$PROJECT_DIR$/util.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/util.o" beforeDir="false" afterPath="$PROJECT_DIR$/util.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -116,25 +110,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.RadMigrateCodeStyle": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.cidr.known.project.marker": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "RunOnceActivity.readMode.enableVisualFormatting": "true",
-    "cf.first.check.clang-format": "false",
-    "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Native Application.all">
     <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="assembly" TARGET_NAME="all" CONFIG_NAME="all" version="1">
       <method v="2">
@@ -159,7 +153,10 @@
       <option name="presentableId" value="Default" />
       <updated>1754840200342</updated>
       <workItem from="1754840202234" duration="34000" />
-      <workItem from="1754840280252" duration="15356000" />
+      <workItem from="1754840280252" duration="15982000" />
+      <workItem from="1754924201004" duration="441000" />
+      <workItem from="1754931317933" duration="1401000" />
+      <workItem from="1754947432728" duration="6081000" />
     </task>
     <servers />
   </component>

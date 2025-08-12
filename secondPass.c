@@ -16,7 +16,7 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 	char *output_name = file_extension(filename, ".txt");
 
 	in = fopen(input_name, "r");
-	out = fopen(output_name, "w+");
+	out = fopen(output_name, "w");
 
 	while (fgets(line, sizeof(line), in) != NULL) {
 		i++;
@@ -44,7 +44,7 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 		else {
 			total_line[0] = '\0';
 		}
-		if (strlen(total_line) > 0){
+		if ((strlen(total_line)) > 0 && check_guideline(command) == 0){
 			check_line(symbol_bin_code, symbol_table_head,total_line);
 		}
 	}
@@ -58,50 +58,63 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 }
 
 char check_line(BinCode **symbol_bin_code, Label **symbol_table_head, char *total_line) {
-	printf("ננננננ");
 	char line_copy[82];
 	char *operand1 = NULL, *operand2 = NULL;
 	int mode;
-	printf("%s\n",total_line);
 	strcpy(line_copy, total_line);
 	operand1 = strtok(line_copy, ",\t\n");
 	operand2 = strtok(NULL, ", \t\n");
-	printf("%s\n",operand1);
-	printf("%s\n",operand2);
 	if (operand1 != NULL) {
 		mode = get_addressing_mode(operand1);
 		if (mode == 1 || mode == 2) {
-			printf("'''''''''אאאאאאאאאאאאאאאאא'''''");
-			check_label(symbol_bin_code, symbol_table_head, operand1);
+			if (mode == 1) {
+				check_label(symbol_bin_code, symbol_table_head, operand1);
+			}
+			else {
+				check_label(symbol_bin_code, symbol_table_head, strtok(operand1,"["));
+			}
 		}
 	}
 	if (operand2 != NULL) {
 		mode = get_addressing_mode(operand2);
 		if (mode == 1 || mode == 2) {
-			printf("''''''''''''''");
-			check_label(symbol_bin_code, symbol_table_head, operand2);
+			if (mode == 1) {
+				check_label(symbol_bin_code, symbol_table_head, operand2);
+			}
+			else {
+				check_label(symbol_bin_code, symbol_table_head, strtok(operand2,"["));
+			}
 		}
 	}
-	return 1;
+	return 0;
 }
 
 void check_label(BinCode **symbol_bin_code, Label **symbol_table_head, char *name) {
 	char temp[32];
 	Label *ptr1 = *symbol_table_head;
 	BinCode *ptr2 = *symbol_bin_code;
-	printf("aaaaaaaaaaaaaaa");
+	printf("%s\n",name);
 	while (ptr1 != NULL) {
-		printf("bbbbbbbbbbb");
-		if (strstr(name, ptr1->name) != NULL) {
-			printf("ccccccccccc");
+		if (strcmp(name, ptr1->name) == 0) {
 			while (strcmp(ptr2->name, "?") != 0) {
 				ptr2 = ptr2->next;
 			}
-			printf("ddddddddddddd");
-			sprintf(temp, "%d", ptr1->address);
+			sprintf(temp, "%d", ptr1->address+100);
 			dec_to_bin(temp, ptr2->name, 8);
+			strcat(ptr2->name,"10");
 			return;
 		}
 		ptr1 = ptr1->next;
 	}
+}
+
+int check_guideline(char *line) {
+	if (strcmp(line, ".data") == 0 ||
+		strcmp(line, ".string") == 0 ||
+		strcmp(line, ".mat") == 0 ||
+		strcmp(line, ".extern") == 0 ||
+		strcmp(line, ".entry") == 0) {
+		return 1;
+		}
+	return  0;
 }

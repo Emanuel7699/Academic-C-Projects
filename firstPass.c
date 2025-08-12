@@ -84,8 +84,6 @@ int first_pass(char *filename) {
 
 	print_label_list(symbol_table_head,out);
 	print_bin_list(symbol_bin_code,out);
-	free_label_list(symbol_table_head);
-	free_bin_list(symbol_bin_code);
 	fclose(in);
 	fclose(out);
 	if (error > 0) {
