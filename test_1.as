@@ -1,14 +1,16 @@
-MAIN: mov M1[r2][r7],LENGTH
+.entry LOOP
+.entry LENGTH
+.extern L3
+.extern W
+MAIN: mov M1[r2][r7],W
  add r2,STR
-LOOP: jmp END
+LOOP: jmp W
  prn #-5
-mcro a_mc
-mov M1[r3][r3],r3
- bne LOOP
-mcroend
  sub r1, r4
  inc K
-a_mc
+
+ mov M1[r3][r3],r3
+ bne L3
 END: stop
 STR: .string "abcdef"
 LENGTH: .data 6,-9,15

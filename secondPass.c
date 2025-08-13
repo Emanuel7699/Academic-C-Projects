@@ -4,8 +4,67 @@
 #include "firstPass.h"
 #include "util.h"
 #include "secondPass.h"
-
 int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_code) {
+	FILE *out = NULL;
+	char *output_name = file_extension(filename, ".txt");
+	char temp[32];
+	Label *ptr1 = *symbol_table_head;
+	BinCode *ptr2 = *symbol_bin_code;
+	out = fopen(output_name, "w");
+
+	while (ptr2 != NULL) {
+		if (ptr2->name[0] != '0' && ptr2->name[0] != '1') {
+			while (ptr1){
+				if (strstr(ptr2->name, ptr1->name) != NULL) {
+					sprintf(temp, "%d", ptr1->address+100);
+					printf("%s----->%s\n",ptr2->name, ptr1->name);
+					dec_to_bin(temp, ptr2->name, 8);
+					strcat(ptr2->name,"-10");
+					break;
+				}
+				ptr1 = ptr1->next;
+			}
+
+			if (!ptr1) {
+				dec_to_bin("0", ptr2->name, 8);
+				strcat(ptr2->name,"-01");
+			}
+			ptr1 = *symbol_table_head;
+		}
+		ptr2 = ptr2->next;
+	}
+	print_label_list(*symbol_table_head,out);
+	print_bin_list(*symbol_bin_code,out);
+	free_label_list(*symbol_table_head);
+	free_bin_list(*symbol_bin_code);
+	fclose(out);
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_code)
+{
 	char line[82], line_copy[82], total_line[82];
 	char label_name[32];
 	char command[31];
@@ -21,14 +80,14 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 	while (fgets(line, sizeof(line), in) != NULL) {
 		i++;
 		strcpy(line_copy, line);
-		if (strncmp(line, ";", 1) == 0) {/*if there is a comment line*/
+		if (strncmp(line, ";", 1) == 0) {
 			continue;
 		}
 		remove_spaces(line);
 		if (line[0] == '\0') {
 			continue;
 		}
-		if (strchr(line, ':')) {/*if there is a label*/
+		if (strchr(line, ':')) {
 			strcpy(label_name, strtok(line_copy, ":"));
 
 			strcpy(command, strtok(NULL, " \t\n"));
@@ -55,9 +114,9 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 	fclose(in);
 	fclose(out);
 	return 0;
-}
+}*/
 
-char check_line(BinCode **symbol_bin_code, Label **symbol_table_head, char *total_line) {
+/*char check_line(BinCode **symbol_bin_code, Label **symbol_table_head, char *total_line) {
 	char line_copy[82];
 	char *operand1 = NULL, *operand2 = NULL;
 	int mode;
@@ -87,28 +146,39 @@ char check_line(BinCode **symbol_bin_code, Label **symbol_table_head, char *tota
 		}
 	}
 	return 0;
-}
+}*/
 
-void check_label(BinCode **symbol_bin_code, Label **symbol_table_head, char *name) {
+/*void check_label(BinCode **symbol_bin_code, Label **symbol_table_head, char *name) {
 	char temp[32];
 	Label *ptr1 = *symbol_table_head;
 	BinCode *ptr2 = *symbol_bin_code;
+	remove_spaces(name);
 	printf("%s\n",name);
 	while (ptr1 != NULL) {
 		if (strcmp(name, ptr1->name) == 0) {
-			while (strcmp(ptr2->name, "?") != 0) {
+			while (ptr2 && strcmp(ptr2->name, "?") != 0) {
 				ptr2 = ptr2->next;
 			}
-			sprintf(temp, "%d", ptr1->address+100);
-			dec_to_bin(temp, ptr2->name, 8);
-			strcat(ptr2->name,"10");
-			return;
+			if (ptr2) {
+				sprintf(temp, "%d", ptr1->address+100);
+				printf("%s----->%s\n",name, ptr1->name);
+				dec_to_bin(temp, ptr2->name, 8);
+				strcat(ptr2->name,"10");
+			}
+		return;
 		}
 		ptr1 = ptr1->next;
 	}
-}
+	while (ptr2 && strcmp(ptr2->name, "?") != 0) {
+			ptr2 = ptr2->next;
+	}
+	if (ptr2) {
+		dec_to_bin("0", ptr2->name, 8);
+		strcat(ptr2->name,"01");
+	}
+}*/
 
-int check_guideline(char *line) {
+/*int check_guideline(char *line) {
 	if (strcmp(line, ".data") == 0 ||
 		strcmp(line, ".string") == 0 ||
 		strcmp(line, ".mat") == 0 ||
@@ -117,4 +187,4 @@ int check_guideline(char *line) {
 		return 1;
 		}
 	return  0;
-}
+}*/

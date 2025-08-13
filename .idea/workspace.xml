@@ -29,7 +29,6 @@
       <change beforePath="$PROJECT_DIR$/firstPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/firstPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/secondPass.h" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/temp_macro.am" beforeDir="false" afterPath="$PROJECT_DIR$/temp_macro.am" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.am" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.am" afterDir="false" />
@@ -113,6 +112,7 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Native Application.all.executor&quot;: &quot;Debug&quot;,
     &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
@@ -157,6 +157,8 @@
       <workItem from="1754924201004" duration="441000" />
       <workItem from="1754931317933" duration="1401000" />
       <workItem from="1754947432728" duration="6081000" />
+      <workItem from="1755014124288" duration="5572000" />
+      <workItem from="1755096106615" duration="14838000" />
     </task>
     <servers />
   </component>

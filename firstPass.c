@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "assembler.h"
 #include "firstPass.h"
-
 #include "secondPass.h"
 #include "util.h"
 
@@ -312,8 +311,8 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		}
 	}
 	strcat(name, "00");
-	Bin_line(symbol_bin_code,name);
-	if (*error == 0){check_bin(symbol_bin_code,operand1,operand2);}
+	Bin_line(symbol_bin_code, name);
+	if (*error == 0){ check_bin(symbol_bin_code,operand1,operand2);}
 	printf("%d\t", count);
 	free(name);
 	return count;
@@ -347,14 +346,14 @@ char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 		if (mode1 == 0) {
 			dec_to_bin(operand1+1, name, 8);
 			strcat(name,"00");
-			Bin_line(symbol_bin_code,name);
+			Bin_line(symbol_bin_code, name);
 		}
 		else if (mode1 == 1) {
-			strcpy(name,"?");
-			Bin_line(symbol_bin_code,name);
+			/*strcpy(name,"?");*/
+			Bin_line(symbol_bin_code, operand1);
 		}
 		else if (mode1 == 2) {
-			strcpy(name,"?");
+			/*strcpy(name,"?");*/
 			r1 = strchr(operand1, 'r');
 			dec_to_bin(r1+1, temp, 4);
 			strcat(name1, temp);
@@ -362,7 +361,7 @@ char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 			dec_to_bin(r2+1, temp, 4);
 			strcat(name1, temp);
 			strcat(name1,"00");
-			Bin_line(symbol_bin_code,name);
+			Bin_line(symbol_bin_code,strtok(operand1,"["));
 			Bin_line(symbol_bin_code,name1);
 		}
 		else if (mode1 == 3 && get_addressing_mode(operand2) != 3) {
@@ -380,14 +379,14 @@ char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 		if (mode2 == 0) {
 			dec_to_bin(operand2+1, name, 8);
 			strcat(name,"00");
-			Bin_line(symbol_bin_code,name);
+			Bin_line(symbol_bin_code, name);
 		}
 		else if (mode2 == 1) {
-			strcpy(name,"?");
-			Bin_line(symbol_bin_code,name);
+			/*strcpy(name,"?");*/
+			Bin_line(symbol_bin_code, operand2);
 		}
 		else if (mode2 == 2) {
-			strcpy(name,"?");
+			/*strcpy(name,"?");*/
 			r1 = strchr(operand2, 'r');
 			dec_to_bin(r1+1, temp, 4);
 			strcat(name1, temp);
@@ -395,7 +394,7 @@ char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 			dec_to_bin(r2+1, temp, 4);
 			strcat(name1, temp);
 			strcat(name1,"00");
-			Bin_line(symbol_bin_code,name);
+			Bin_line(symbol_bin_code,strtok(operand2,"["));
 			Bin_line(symbol_bin_code,name1);
 		}
 		else if (mode2 == 3) {
