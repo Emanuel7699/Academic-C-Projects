@@ -69,7 +69,9 @@ int first_pass(char *filename) {
 			process_data_directive(&symbol_bin_code, command, total_line, &DC, &error, lineNumber);
 		}
 		else if (strcmp(command, ".extern") == 0) {
-			continue;
+			if (ex_en(total_line, &error, lineNumber)==0) {
+				check_command(&symbol_table_head, total_line, command, DC, IC, &error, lineNumber);
+			}
 		}
 		else if (strcmp(command, ".entry") == 0) {
 			continue;
@@ -89,13 +91,14 @@ int first_pass(char *filename) {
 		printf("The file %s colsed because of errors\n", input_name);
 	return 1;
 	}
-	second_pass(filename, &symbol_table_head, &symbol_bin_code);
+	second_pass(filename, &symbol_table_head, &symbol_bin_code, &error, lineNumber);
 	return 0;
 }
 
 void check_command(Label **head, char *label_name, char *command, int DC, int IC, int *error, int lineNumber) {
 	char temp[10];
 	remove_spaces(command);
+	remove_spaces(label_name);
 	if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
 		if (add_label(head, label_name, DC+IC, "data", "")){
 			fprintf(stderr, "Error: in line %d - Label '%s' already exists\n", lineNumber, label_name);
@@ -103,7 +106,7 @@ void check_command(Label **head, char *label_name, char *command, int DC, int IC
 		}
 	}
 	else if (strcmp(command, ".extern") == 0) {
-		if (add_label(head, label_name, 0, "extern", "extern")){
+		if (add_label(head, label_name, 0, "extern", "")){
 			fprintf(stderr, "Error: in line %d - Label '%s' already exists\n", lineNumber, label_name);
 			*error = 1;
 		}
@@ -183,7 +186,6 @@ void process_data_directive(BinCode **symbol_bin_code, char *directive, char *op
 			fprintf(stderr, "Error: in line %d - There are extra numbers to put in this matrix.\n", lineNumber);
 		*error = 1;
 		}
-
 	}
 	free(name);
 }
@@ -194,6 +196,7 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	int type = -1, mode1 = -1, mode2 = -1;
 	char *operand1 = NULL, *operand2 = NULL, *operandExtra = NULL;
 	char line_copy[82];
+	name[0] = '\0';
 	strcpy(line_copy, total_line);
 	type = opcode(command_name,name);
 	if (type == -1) {

@@ -4,31 +4,78 @@
 #include "firstPass.h"
 #include "util.h"
 #include "secondPass.h"
+
 int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_code) {
-	FILE *out = NULL;
+	char line[82], line_copy[82], total_line[82];
+	FILE *in = NULL, *out = NULL;
 	char *output_name = file_extension(filename, ".txt");
-	char temp[32];
+	char *input_name = file_extension(filename, ".am");
+	char *temp;
+	char command[31];
+	char label_name[32];
 	Label *ptr1 = *symbol_table_head;
 	BinCode *ptr2 = *symbol_bin_code;
+	int lineNumber = 1;
+	int error = 0;
+
+	in = fopen(input_name, "r");
 	out = fopen(output_name, "w");
+
+
+	/*while (fgets(line, sizeof(line), in) != NULL) {
+
+		if (strchr(line, ':')) {
+				strcpy(label_name,strtok(line_copy, ":"));
+				strcpy(command, strtok(NULL, " \t\n"));
+		}
+		else {
+			strcpy(command, strtok(line_copy, " \t\n"));
+		}
+
+		temp = strtok(NULL, "\n");
+		if (temp != NULL) {
+			strcpy(total_line, temp);
+		}
+		else {
+			total_line[0] = '\0';
+		}
+
+		remove_spaces(total_line);
+		remove_spaces(command);
+		if (strcmp(command, ".entry") == 0) {
+			if (ex_en(total_line, &error, 0)==0) {
+				while (ptr1) {
+					if (strcmp(ptr1->name, ".entry") == 0) {
+						strcpy(ptr1->attribute, "entry");
+						break;
+					}
+				}
+			}
+		}
+		lineNumber++;
+	}*/
+
 
 	while (ptr2 != NULL) {
 		if (ptr2->name[0] != '0' && ptr2->name[0] != '1') {
 			while (ptr1){
-				if (strstr(ptr2->name, ptr1->name) != NULL) {
+				if (strcmp(ptr2->name, ptr1->name) == 0) {
 					sprintf(temp, "%d", ptr1->address+100);
 					printf("%s----->%s\n",ptr2->name, ptr1->name);
-					dec_to_bin(temp, ptr2->name, 8);
-					strcat(ptr2->name,"-10");
+					if (strcmp(ptr1->type, "extern") == 0) {
+						strcpy(ptr1->attribute, "extern");
+						dec_to_bin("0", ptr2->name, 8);
+						strcat(ptr2->name,"-01");
+					}
+					else{
+						dec_to_bin(temp, ptr2->name, 8);
+						strcat(ptr2->name,"-10");
+					}
 					break;
 				}
 				ptr1 = ptr1->next;
 			}
-
-			if (!ptr1) {
-				dec_to_bin("0", ptr2->name, 8);
-				strcat(ptr2->name,"-01");
-			}
+			if (!ptr1){ fprintf(stderr, "Error: In line %d - There is no label named \"%s\".\n", lineNumber, ptr2->name);}
 			ptr1 = *symbol_table_head;
 		}
 		ptr2 = ptr2->next;
@@ -40,7 +87,6 @@ int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_
 	fclose(out);
 	return 0;
 }
-
 
 
 

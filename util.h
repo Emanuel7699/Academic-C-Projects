@@ -9,3 +9,4 @@ char opcode(char *command, char *name);
 void dec_to_bin(char *decimal_str, char *binary_str, int bits);
 int check_digit(char *operand, int i, int lineNumber);
 int check_Addressing_Method(char *operand, int operandNumber, int *mode);
+int ex_en(char *label_name, int *error, int lineNumber);

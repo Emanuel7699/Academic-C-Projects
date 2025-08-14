@@ -30,11 +30,13 @@
       <change beforePath="$PROJECT_DIR$/firstPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_macro.am" beforeDir="false" afterPath="$PROJECT_DIR$/temp_macro.am" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.am" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.am" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.as" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.as" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.ob" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.ob" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.c" beforeDir="false" afterPath="$PROJECT_DIR$/util.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.o" beforeDir="false" afterPath="$PROJECT_DIR$/util.o" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -158,7 +160,7 @@
       <workItem from="1754931317933" duration="1401000" />
       <workItem from="1754947432728" duration="6081000" />
       <workItem from="1755014124288" duration="5572000" />
-      <workItem from="1755096106615" duration="14838000" />
+      <workItem from="1755096106615" duration="37982000" />
     </task>
     <servers />
   </component>

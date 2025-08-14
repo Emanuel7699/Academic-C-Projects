@@ -1,3 +1,5 @@
+L3 100 extern 
+W 100 extern 
 MAIN 100 code 
 LOOP 107 code 
 END 121 code 
@@ -8,7 +10,7 @@ M1 133 data
 0000100100
 M1
 0010011100
-W
+We
 0010110100
 0010000000
 STR

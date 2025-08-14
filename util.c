@@ -174,6 +174,9 @@ int error = 0;
 	if (i==2){
 		int j = 0;
 		char *pointer = operand;
+		if (pointer[0] == '[' || pointer[strlen(pointer)-1] !=']') {
+			fprintf(stderr, "Error: in line %d- The label is not in the correct location or does not exist.\n", lineNumber);
+		}
 		for (j=0;j<2;j++){
 			pointer = strchr(pointer, '[');
 			if (pointer == NULL || *(pointer+3) != ']'){
@@ -285,4 +288,22 @@ int check_Addressing_Method(char *command_name, int operandNumber, int *mode){
 return 0;
 }
 
-
+int ex_en(char *label_name, int *error, int lineNumber) {
+	char operands_copy[82];
+	char *token;
+	remove_spaces(label_name);
+	strcpy(operands_copy, label_name);
+	token = strtok(operands_copy, " \t\0");
+	if (token == NULL) {
+		fprintf(stderr, "Error: in line %d - No label defined.\n", lineNumber);
+		*error = 1;
+		return 1;
+	}
+	token = strtok(NULL, " \t\0");
+	if (token != NULL) {
+		fprintf(stderr, "Error: in line %d - Extra label defined.\n", lineNumber);
+		*error = 1;
+		return 1;
+	}
+	return 0;
+}
