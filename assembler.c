@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include "assembler.h"
 #include "firstPass.h"
-#include "secondPass.h"
 
 /*The main function that receive files and return the file with macros*/
 int main (int argc, char *argv[]) {
@@ -15,7 +14,11 @@ int main (int argc, char *argv[]) {
         file = file_extension(argv[i], ".as");
 		printf("Open the %s file\n", file);
         if (!read_file(file)) {
+            printf("Macro expansion in file \"%s\" completed successfully\n", file);
             first_pass(file);
+        }
+        else {
+            printf("The file %s was closed due to errors in the macro expansion.\n", file);
         }
         free(file);
     }

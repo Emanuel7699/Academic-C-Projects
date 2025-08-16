@@ -5,15 +5,39 @@
 #include "firstPass.h"
 #include "assembler.h"
 
-int add_label(Label **head, char *name, int address, char *type, char *attribute) {
-	Label *ptr = *head;
-	Label *new_label = (Label *)malloc(sizeof(Label));
-	while (ptr != NULL) {
+int add_ent_label(Ent **head, char *name) {
+	Ent *ptr = *head;
+	Ent *new_label = (Ent *)malloc(sizeof(Ent));
+
+
+	strcpy(new_label->name, name);
+	new_label->next = NULL;
+
+	if (*head == NULL) {
+		*head = new_label;
+	} else {
+		ptr = *head;
+
+		while (ptr->next != NULL) {
+			if (strcmp(ptr->name, name) == 0) {
+				free(new_label);
+				return 1;
+			}
+			ptr = ptr->next;
+		}
 		if (strcmp(ptr->name, name) == 0) {
+			free(new_label);
 			return 1;
-        }
-        ptr = ptr->next;
-    }
+		}
+		ptr->next = new_label;
+	}
+	return 0;
+}
+
+int add_label(Label **head, char *name, int address, char *type, char *attribute) {
+	Label *ptr;
+	Label *new_label = (Label *)malloc(sizeof(Label));
+
 
 	strcpy(new_label->name, name);
 	new_label->address = address;
@@ -24,13 +48,22 @@ int add_label(Label **head, char *name, int address, char *type, char *attribute
 	if (*head == NULL) {
 		*head = new_label;
 	} else {
-		Label *ptr = *head;
+		ptr = *head;
+
 		while (ptr->next != NULL) {
+			if (strcmp(ptr->name, name) == 0) {
+				free(new_label);
+				return 1;
+			}
 			ptr = ptr->next;
+		}
+		if (strcmp(ptr->name, name) == 0) {
+			free(new_label);
+			return 1;
 		}
 		ptr->next = new_label;
 	}
-return 0;
+	return 0;
 }
 
 void Bin_line(BinCode **head, char *name) {
@@ -89,10 +122,27 @@ void print_bin_list(BinCode *head, FILE *out) {
 	}
 }
 
+void print_ent_list(Ent *head, FILE *out) {
+	Ent *ptr = head;
+	while (ptr != NULL) {
+		fprintf(out, "%s\n", ptr->name);
+		ptr = ptr->next;
+	}
+}
+
 void free_bin_list(BinCode *head) {
 	BinCode *ptr = head;
 	while (ptr) {
 		BinCode *temp = ptr;
+		ptr = ptr->next;
+		free(temp);
+	}
+}
+
+void free_ent_list(Ent *head) {
+	Ent *ptr = head;
+	while (ptr) {
+		Ent *temp = ptr;
 		ptr = ptr->next;
 		free(temp);
 	}
@@ -139,13 +189,13 @@ int error = 0;
 	if (i==0){
 		int pointer = 1;
 		if (operand[1] == '\0') {
-			fprintf(stderr, "Error: in line %d- no number appears after #\n", lineNumber);
+			printf("Error: in line %d- no number appears after #\n", lineNumber);
 		return 1;
 		}
 		while (operand[pointer] != '\0') {
 			if (operand[pointer] < '0' || operand[pointer] > '9') {
 				if ((pointer != 1) || ((pointer == 1) && (operand[1] != '-' && operand[1] != '+'))) {
-					fprintf(stderr, "Error: in line %d- invalid number\n", lineNumber);
+					printf("Error: in line %d- invalid number\n", lineNumber);
 				return 1;
 				}
 			}
@@ -162,7 +212,7 @@ int error = 0;
 			++pointer;
 			while (*pointer != ']') {
 				if (*pointer > '9' || *pointer < '0') {
-					fprintf(stderr, "Error: in line %d- There is no number in the types\n", lineNumber);
+					printf("Error: in line %d- There is no number in the types\n", lineNumber);
 				return 1;
 				}
 			pointer++;
@@ -175,16 +225,16 @@ int error = 0;
 		int j = 0;
 		char *pointer = operand;
 		if (pointer[0] == '[' || pointer[strlen(pointer)-1] !=']') {
-			fprintf(stderr, "Error: in line %d- The label is not in the correct location or does not exist.\n", lineNumber);
+			printf("Error: in line %d- The label is not in the correct location or does not exist.\n", lineNumber);
 		}
 		for (j=0;j<2;j++){
 			pointer = strchr(pointer, '[');
 			if (pointer == NULL || *(pointer+3) != ']'){
-				fprintf(stderr, "Error: in line %d- The matrix is incorrect\n", lineNumber);
+				printf("Error: in line %d- The matrix is incorrect\n", lineNumber);
 			return 1;
 			}
 			if (*(pointer+1) != 'r' || *(pointer+2) < '0' || *(pointer+2) > '7'){
-				fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
+				printf("Error: in line %d- The operand is incorrect\n", lineNumber);
 			return 1;
 			}
 		pointer++;
@@ -194,7 +244,7 @@ int error = 0;
 
 	if (i==3){
 		if (strncmp(operand, "r", 1) != 0 || strlen(operand) != 2 || operand[1] < '0' || operand[1] > '7') {
-			fprintf(stderr, "Error: in line %d- The operand is incorrect\n", lineNumber);
+			printf("Error: in line %d- The operand is incorrect\n", lineNumber);
 		return 1;
 		}
 	}
@@ -208,13 +258,13 @@ int error = 0;
 			ptr = 0;
 			pointer = strchr(pointer, '[');
 			if (pointer == NULL || strchr(pointer, ']') == NULL) {
-				fprintf(stderr, "Error: in line %d - The matrix is incorrect\n", lineNumber);
+				printf("Error: in line %d - The matrix is incorrect\n", lineNumber);
 			return 1;
 			}
 			pointer++;
 			while (*pointer != ']' && *pointer != '\0' && *pointer != '\n' && *pointer != '\r'){
 				if (*pointer > '9' || *pointer < '0'){
-					fprintf(stderr, "Error: in line %d - The number is incorrect\n", lineNumber);
+					printf("Error: in line %d - The number is incorrect\n", lineNumber);
 				return 1;
 				}
 			number[ptr] = *pointer;
@@ -233,20 +283,20 @@ int error = 0;
 		while (*pointer != '\n' && *pointer != '\0' && *pointer != '\r'){
 			if (*pointer == ','){
 				if (*(pointer+1) == ','){
-					fprintf(stderr, "Error: in line %d - Double comma\n", lineNumber);
+					printf("Error: in line %d - Double comma\n", lineNumber);
 					error = 1;
 				}
 			}
 			else if (*pointer < '0' || *pointer > '9') {
 				if ((*(pointer-1) != ',') || ((*(pointer-1) == ',') && (*pointer != '-' && *pointer != '+'))) {
-					fprintf(stderr, "Error: in line %d - The number is incorrect\n", lineNumber);
+					printf("Error: in line %d - The number is incorrect\n", lineNumber);
 				error = 1;
 				}
 			}
 		pointer ++;
 		}
 		if (operand[0] == ',' || *(pointer-1) == ','){
-			fprintf(stderr, "Error: in line %d - The comma is not placed correctly\n", lineNumber);
+			printf("Error: in line %d - The comma is not placed correctly\n", lineNumber);
 		error = 1;
 		}
 	if (error == 1){return 1;}
@@ -257,21 +307,21 @@ int error = 0;
 		int len = strlen(operand);
 		char *pointer = operand;
 		if ((len > 32) || (len == 30 && operand[len-1] != '\n')) {
-            fprintf(stderr, "Error: in line %d - Label too long (more than 30 characters)\n", lineNumber);
+            printf("Error: in line %d - Label too long (more than 30 characters)\n", lineNumber);
 			error = 1;
 		}
 		if (check_instruction(operand) == 1){
-			fprintf(stderr, "Error: in line %d - The label is called an instruction or guideline\n", lineNumber);
+			printf("Error: in line %d - The label is called an instruction or guideline\n", lineNumber);
 			error = 1;
 		}
 		if (isdigit(operand[0])){
-			fprintf(stderr, "Error: in line %d - There is number in first Label\n", lineNumber);
+			printf("Error: in line %d - There is number in first Label\n", lineNumber);
 			pointer++;
 			error = 1;
 		}
 		while (*pointer != '\0'){
 			if ((*pointer < 'A' || *pointer > 'Z') && (*pointer < 'a' || *pointer > 'z') && (*pointer < '0' || *pointer > '9')){
-				fprintf(stderr, "Error: in line %d - The label is incorrect\n", lineNumber);
+				printf("Error: in line %d - The label is incorrect\n", lineNumber);
 				error = 1;
 			}
 		pointer++;
@@ -295,13 +345,13 @@ int ex_en(char *label_name, int *error, int lineNumber) {
 	strcpy(operands_copy, label_name);
 	token = strtok(operands_copy, " \t\0");
 	if (token == NULL) {
-		fprintf(stderr, "Error: in line %d - No label defined.\n", lineNumber);
+		printf("Error: in line %d - No label defined.\n", lineNumber);
 		*error = 1;
 		return 1;
 	}
 	token = strtok(NULL, " \t\0");
 	if (token != NULL) {
-		fprintf(stderr, "Error: in line %d - Extra label defined.\n", lineNumber);
+		printf("Error: in line %d - Extra label defined.\n", lineNumber);
 		*error = 1;
 		return 1;
 	}

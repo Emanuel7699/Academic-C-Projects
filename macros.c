@@ -9,12 +9,12 @@ int read_file(char *filename) {
     FILE *in = NULL, *out = NULL, *temp_macro = NULL;
 	char macro[10], macro_name[82];
     char line[82];
-    int len;
+    int len, error = 0, lineNumber = 1;
     char *newfile = file_extension(filename,".am");
 
     in = fopen(filename, "r");
     if (!in) {/*if the input file can't be open*/
-        fprintf(stderr, "Error: Cannot open input file\n");
+        printf("Error: Cannot open input file\n");
         return 1;
     }
     out = fopen(newfile, "w");
@@ -23,10 +23,8 @@ int read_file(char *filename) {
     while (fgets(line, sizeof(line), in) != NULL) {
         len = strlen(line);
         if ((len > 80) || (len == 80 && line[len-1] != '\n')) {
-            fprintf(stderr, "Error: Line too long (more than 80 characters)\n");
-            remove(newfile);
-            close_files(in, out, temp_macro, newfile);
-            return 1;
+            printf("Error: in line %d- Line too long (more than 80 characters)\n", lineNumber);
+            error = 1;
         }
 
         if (strncmp(line, ";", 1) == 0) {/*if there is a comment line*/
@@ -34,49 +32,48 @@ int read_file(char *filename) {
         }
 
         if (strstr(line, "mcro") == NULL) {/*If the line is not a macro*/
-            if (check_macro_in_file(line, temp_macro, out)) {/*check if the line is a macro call*/
+            if (check_macro_in_file(line, temp_macro, out) == 0) {/*check if the line is a macro call*/
                 fputs(line, out);
             }
         }
         else {/*If the line is a macro*/
 			sscanf(line, "%s %s", macro, macro_name);
-            if (check_macro(line, 1)) {
-                remove(newfile);
-                close_files(in, out, temp_macro, newfile);
-                return 1;
+            if (check_macro(line, 1, &lineNumber) == 1) {
+                error = 1;
             }
-            if (check_duplicate_macro(macro, macro_name, temp_macro)) {
-				fprintf(stderr, "Error: Duplicate macros\n");
-                remove(newfile);
-                close_files(in, out, temp_macro, newfile);
-                return 1;
+            if (check_duplicate_macro(macro, macro_name, temp_macro) == 1) {
+				printf("Error: in line %d- Duplicate macros\n", lineNumber);
+                error = 1;
             }
-            if (check_instruction(line)) {
-				fprintf(stderr, "Error: The command is instruction\n");
-                remove(newfile);
-                close_files(in, out, temp_macro, newfile);
-                return 1;
+            if (check_instruction(line) == 1) {
+				printf( "Error: in line %d- The command is instruction\n", lineNumber);
+                error = 1;
             }
 
             fputs(line, temp_macro);
-            if (write_macro_to_file(in, temp_macro)) {
-                close_files(in, out, temp_macro, newfile);
-                remove(newfile);
-                return 1;
+            if (write_macro_to_file(in, temp_macro, &lineNumber)) {
+                error = 1;
             }
         }
+        lineNumber++;
     }
-    close_files(in, out, temp_macro, newfile);
+    close_files(in, out, temp_macro);
+    if (error > 0) {
+        remove(newfile);
+        free(newfile);
+        return 1;
+    }
+    free(newfile);
     return 0;
 }
 
 /*Write the macro to the file temp*/
-int write_macro_to_file(FILE *in, FILE *temp_macro) {
+int write_macro_to_file(FILE *in, FILE *temp_macro, int *lineNumber) {
     char line[82];
     while (fgets(line, sizeof(line), in) != NULL) {
         fputs(line, temp_macro);
         if (strstr(line, "mcroend") != NULL) {
-            if (check_macro(line, 0)) {
+            if (check_macro(line, 0, lineNumber) == 1) {
                 return 1;
             }
             break;
@@ -110,7 +107,7 @@ int check_macro_in_file(char *line, FILE *temp_macro, FILE *out) {
 }
 
 /*check if the macro line is correct*/
-int check_macro(char *line, int i) {
+int check_macro(char *line, int i, int *lineNumber) {
     char macro[10], macro_name[82];
     char *extra;
 
@@ -118,15 +115,15 @@ int check_macro(char *line, int i) {
         sscanf(line, "%s %s", macro, macro_name);
         extra = (strstr(line, macro_name) + strlen(macro_name));
         if (strcmp(macro, "mcro") != 0 || (*extra != '\r' && *extra != '\n' && *extra != '\0')){
-            fprintf(stderr, "Error: Invalid macro definition line\n");
+            printf("Error: in line %d- Invalid macro definition line\n", *lineNumber);
             return 1;
         }
     }
     if (i == 0) {
         sscanf(line, "%s", macro);
         extra = (strstr(line, macro) + strlen(macro));
-        if (*extra != '\r' && *extra != '\n' && *extra != '\0') {
-            fprintf(stderr, "Error: Invalid endmcro line\n");
+        if (strcmp(macro, "mcroend") != 0 || (*extra != '\r' && *extra != '\n' && *extra != '\0')) {
+            printf("Error: in line %d- Invalid endmcro line\n", *lineNumber);
             return 1;
         }
     }
@@ -174,10 +171,8 @@ int check_instruction(char *macro) {
 }
 
 /*close files*/
-void close_files(FILE *in, FILE *out, FILE *temp_macro, char *newfile) {
+void close_files(FILE *in, FILE *out, FILE *temp_macro) {
     fclose(in);
     fclose(out);
-    free(newfile);
     fclose(temp_macro);
-    /*remove("temp_macro.am");*/
 }

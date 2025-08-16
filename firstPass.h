@@ -11,6 +11,11 @@ typedef struct BinCode{
 	struct BinCode *next;
 } BinCode;
 
+typedef struct Ent{
+	char name[31];
+	struct Ent *next;
+} Ent;
+
 int first_pass(char *filename);
 void check_command(Label **head, char *label_name, char *command, int DC, int IC, int *error, int lineNumber);
 void process_data_directive(BinCode **symbol_bin_code, char *directive, char *operands, int *DC, int *error, int lineNumber);
