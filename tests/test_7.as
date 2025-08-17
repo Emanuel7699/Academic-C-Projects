@@ -1,0 +1,22 @@
+;"util"
+.entry LOOP
+.entry LENGTH
+.extern L3
+.extern W
+MAINssssssssssssssssssssssssssssss: mov M1[r2][r7],W
+ add r2,STR
+LO`OP: jmp W
+ prn #-5
+mcro a_mc
+mov M1[r3][r3],r3
+ bne LOOP
+mcroend
+ sub r9, r4
+ inc K
+a_mc
+1END: stop
+STR: .string "abcdef"
+LENGTH: .data 6,-9,,15
+.mat: .data ,22,
+M1: .mat [20[2] 1,2,3,4 
+M1: .mat [2][t] 1,2,3,4 

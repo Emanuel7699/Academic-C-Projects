@@ -1,4 +1,2 @@
-int second_pass(char *filename, Label **symbol_table_head, BinCode **symbol_bin_code, Ent **symbol_ent);
-char check_line(BinCode **symbol_bin_code, Label **symbol_table_head, char *total_line);
-void check_label(BinCode **symbol_bin_code, Label **symbol_table_head, char *name);
-int check_guideline(char *line);
+int second_pass(assembler_context *content);
+void base_four(char *bin_line, int peak);

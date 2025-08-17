@@ -1,237 +1,248 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include "structs.h"
 #include "assembler.h"
 #include "firstPass.h"
-#include "secondPass.h"
 #include "util.h"
 
-int first_pass(char *filename) {
-	int IC = 0, DC = 0;
-	int error = 0;
-	int lineNumber = 1;
-	Label *symbol_table_head = NULL;
-	BinCode *symbol_bin_code = NULL;
-	Ent *symbol_ent = NULL;
-	char line[82], lineCopy[82], totalLine[82];
-	char labelName[32];
-	char command[31];
+/**First_pass - Performs the first pass of the assembler.
+ *
+ * It reads and builds the symbol table, and checks for errors.
+ *
+ * @param content a struct that holds all the variables used across functions.
+ * @return 0 if the first pass was successful, 1 if there were errors.
+ */
+int first_pass(assembler_context *content) {
+	FILE *temp_macro = NULL;
 	char *temp;
+	char *input_name = file_extension(content->filename, ".am");
 
-	FILE *in = NULL, *out = NULL, *temp_macro = NULL;
+	content->IC = 0;
+	content->DC = 0;
+	content->error = 0;
+	content->lineNumber = 1;
+	content->symbol_table_head = NULL;
+	content->symbol_bin_code = NULL;
+	content->symbol_ent = NULL;
 
-	char *input_name = file_extension(filename, ".am");
-	char *output_name = file_extension(filename, ".ob");
-	in = fopen(input_name, "r");
-	out = fopen(output_name, "w");
+	content->in = fopen(input_name, "r");
 	temp_macro = fopen("temp_macro.am", "r");
 
-	if (!in) {
-		perror("Error opening input file");
+	if (!content->in) {
+		printf("Error opening input file");
 		return 1;
 	}
-	if (!out) {
-		perror("Error opening output file");
-		fclose(in);
+	if (!content->out) {
+		printf("Error opening output file");
+		fclose(content->in);
 		return 1;
 	}
 	if (!temp_macro) {
-		perror("Warning: temp_macro.am not found");
+		printf("Error: temp_macro.am not found");
 	}
 
-	while (fgets(line, sizeof(line), in) != NULL) {
+	while (fgets(content->line, sizeof(content->line), content->in) != NULL) {
 
-		strcpy(lineCopy, line);
-		if (strncmp(line, ";", 1) == 0) {/*if there is a comment line*/
+		strcpy(content->lineCopy, content->line);
+		if (strncmp(content->line, ";", 1) == 0) {/*if there is a comment line*/
+			(content->lineNumber)++;
 			continue;
 		}
-		remove_spaces(line);
-		if (line[0] == '\0') {
+		remove_spaces(content->line);
+		if (content->line[0] == '\0') {
+			(content->lineNumber)++;
 			continue;
 		}
 
-		if (strchr(line, ':')) {/*if there is a label*/
+		if (strchr(content->line, ':')) {/*if there is a label*/
 
-			strcpy(labelName, strtok(lineCopy, ":"));
-			if (check_digit(labelName, 6, lineNumber) == 1){
-				error = 1;
+			strcpy(content->labelName, strtok(content->lineCopy, ":"));
+			if (check_digit(content->labelName, 6, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
-			if (check_duplicate_macro("mcro", labelName, temp_macro)) {
-				printf("Error: in line %d- The label named as macro name\n", lineNumber);
-				error = 1;
+			strcpy(content->macroName, "mcro");
+			if (check_duplicate_macro(content, temp_macro)) {
+				printf("Error: in line %d- The label named as macro name\n", content->lineNumber);
+				content->error = 1;
 			}
-			if (strcpy(command, strtok(NULL, " \t\n")) == NULL) {
-				printf("Error: in line %d- There is only label without command.\n", lineNumber);
+			temp = strtok(NULL, " \t\n");
+			if (temp == NULL) {
+				printf("Error: in line %d- There is only label without command.\n", content->lineNumber);
+				content->error = 1;
+				continue;
 			}
-			if (strcmp(command,".entry") != 0 && strcmp(command,".extern") != 0) {
-				check_command(&symbol_table_head, labelName, command, DC, IC, &error, lineNumber);
+			strcpy(content->command, temp);
+			if (strcmp(content->command,".entry") != 0 && strcmp(content->command,".extern") != 0) {
+				check_command(content);
 			}
 		}
 		else {
-			strcpy(command, strtok(lineCopy, " \t\n"));
+			strcpy(content->command, strtok(content->lineCopy, " \t\n"));
 		}
 
 		temp = strtok(NULL, "\n");
 		if (temp != NULL) {
-			strcpy(totalLine, temp);
+			strcpy(content->totalLine, temp);
 		}
 		else {
-			totalLine[0] = '\0';
+			content->totalLine[0] = '\0';
 		}
 
-		if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
-			process_data_directive(&symbol_bin_code, command, totalLine, &DC, &error, lineNumber);
+		if (strcmp(content->command, ".data") == 0 || strcmp(content->command, ".string") == 0 || strcmp(content->command, ".mat") == 0) {
+			process_data_directive(content);
 		}
-		else if (strcmp(command, ".extern") == 0) {
-			if (ex_en(totalLine, &error, lineNumber)==0) {
-				check_command(&symbol_table_head, totalLine, command, DC, IC, &error, lineNumber);
+		else if (strcmp(content->command, ".extern") == 0) {
+			if (ex_en(content)==0) {
+				check_command(content);
 			}
 		}
-		else if (strcmp(command, ".entry") == 0) {
-			if (ex_en(totalLine, &error, lineNumber) == 0) {
-				if (add_ent_label(&symbol_ent,totalLine) == 1) {
-					printf("Error: in line %d - Label '%s' already exists\n", lineNumber, labelName);
-					error = 1;
+		else if (strcmp(content->command, ".entry") == 0) {
+			if (ex_en(content) == 0) {
+				if (add_ent_label(&content->symbol_ent,content->totalLine) == 1) {
+					printf("Error: in line %d - Label \"%s\" already exists\n", content->lineNumber, content->totalLine);
+					content->error = 1;
 				}
 			}
 		}
 		else {
-			int words = count_words_for_instruction(&symbol_bin_code, command, totalLine, lineNumber, &error);
-			IC += words;
+			int words = count_words_for_instruction(content);
+			content->IC += words;
 		}
-	lineNumber++;
+	(content->lineNumber)++;
 	}
 
-	print_label_list(symbol_table_head,out);
-	print_bin_list(symbol_bin_code,out);
-	fclose(in);
-	fclose(out);
+	fclose(content->in);
 	fclose(temp_macro);
 	remove("temp_macro.am");
-	if (error > 0) {
-		printf("The file %s was closed due to errors in the first pass.\n", input_name);
+	if (content->error > 0) {
 	return 1;
 	}
-	printf("First pass completed successfully\n");
-	second_pass(filename, &symbol_table_head, &symbol_bin_code, &symbol_ent);
 	return 0;
 }
 
-void check_command(Label **head, char *labelName, char *command, int DC, int IC, int *error, int lineNumber) {
+/*Check and write the command to label tabel*/
+void check_command(assembler_context *content) {
 	char temp[10];
-	remove_spaces(command);
-	remove_spaces(labelName);
-	if (strcmp(command, ".data") == 0 || strcmp(command, ".string") == 0 || strcmp(command, ".mat") == 0) {
-		if (add_label(head, labelName, DC+IC, "data", "")){
-			printf("Error: in line %d - Label \"%s\" already exists as internal/external. \n", lineNumber, labelName);
-			*error = 1;
+	remove_spaces(content->command);
+	remove_spaces(content->labelName);
+	if (strcmp(content->command, ".data") == 0 || strcmp(content->command, ".string") == 0 || strcmp(content->command, ".mat") == 0) {
+		if (add_label(&content->symbol_table_head, content->labelName, content->DC+content->IC, "data", "")){
+			printf("Error: in line %d - Label \"%s\" already exists as internal/external. \n", content->lineNumber, content->labelName);
+			content->error = 1;
 		}
 	}
-	else if (strcmp(command, ".extern") == 0) {
-		if (add_label(head, labelName, 0, "extern", "")){
-			printf("Error: in line %d - Label \"%s\" already exists as internal/external.\n", lineNumber, labelName);
-			*error = 1;
+	else if (strcmp(content->command, ".extern") == 0) {
+		if (add_label(&content->symbol_table_head, content->totalLine, 0, "extern", "")){
+			printf("Error: in line %d - Label \"%s\" already exists as internal/external.\n", content->lineNumber, content->labelName);
+			content->error = 1;
 		}
 	}
-	else if (opcode(command,temp) !=-1) {
-		if (add_label(head, labelName, IC+DC, "code", "")){
-			printf("Error: in line %d - Label \"%s\" already exists as internal/external.\n", lineNumber, labelName);
-			*error = 1;
+	else if (opcode(content->command,temp) !=-1) {
+		if (add_label(&content->symbol_table_head, content->labelName, content->IC+content->DC, "code", "")){
+			printf("Error: in line %d - Label \"%s\" already exists as internal/external.\n", content->lineNumber, content->labelName);
+			content->error = 1;
 		}
 	}
 }
 
-void process_data_directive(BinCode **symbol_bin_code, char *directive, char *operands, int *DC, int *error, int lineNumber) {
+/*Handles data related commands in the assembly file.*/
+void process_data_directive(assembler_context *content) {
 	char *name = (char *)malloc(11 * sizeof(char));
 	char operands_copy[82];
 	char ascii[12];
 	char *token;
 	int i;
 	name[0] = '\0';
-	if (strcmp(directive, ".data") == 0) {
-		strcpy(operands_copy, operands);
+	if (strcmp(content->command, ".data") == 0) {
+		strcpy(operands_copy, content->totalLine);
 		remove_spaces(operands_copy);
-		if (check_digit(operands_copy, 5, lineNumber) == 1){
-			*error = 1;
+		if (check_digit(operands_copy, 5, &content->lineNumber, &content->error) == 1){
+			content->error = 1;
 		}
 		token = strtok(operands_copy, ",\t\n");
 		while (token != NULL) {
 			dec_to_bin(token,name,10);
-			Bin_line(symbol_bin_code, name);
-			(*DC)++;
+			Bin_line(&content->symbol_bin_code, name);
+			(content->DC)++;
 			token = strtok(NULL, ",\t\n");
 		}
 	}
-	else if (strcmp(directive, ".string") == 0) {
-		if (operands[0] == '\"') {
+	else if (strcmp(content->command, ".string") == 0) {
+		if (content->totalLine[0] == '\"') {
 			int length = 0;
-			for (i=1; operands[i] != '\"' && operands[i] != '\0'; i++) {
-				sprintf(ascii, "%d", (int)operands[i]);
-				if (operands[i] < ' ' || operands[i] > '~'){
-					printf("Error: in line %d - The character %c cannot be used.\n", lineNumber, operands[i]);
-				*error = 1;
+			for (i=1; content->totalLine[i] != '\"' && content->totalLine[i] != '\0'; i++) {
+				sprintf(ascii, "%d", (int)content->totalLine[i]);
+				if (content->totalLine[i] < ' ' || content->totalLine[i] > '~'){
+					printf("Error: in line %d - The character %c cannot be used.\n", content->lineNumber, content->totalLine[i]);
+				content->error = 1;
 				}
 				dec_to_bin(ascii,name,10);
-				Bin_line(symbol_bin_code, name);
+				Bin_line(&content->symbol_bin_code, name);
 				length++;
 			}
-			(*DC) += (length + 1);
+			(content->DC) += (length + 1);
 			strcpy(name,"0000000000");
-			Bin_line(symbol_bin_code, name);
+			Bin_line(&content->symbol_bin_code, name);
 		}
 	}
-	else if (strcmp(directive, ".mat") == 0) {
+	else if (strcmp(content->command, ".mat") == 0) {
 		int matNum = 1;
 		int number = 0;
-		strcpy(operands_copy, operands);
+		strcpy(operands_copy, content->totalLine);
 		token = strtok(operands_copy, " \t\n");
-		number = check_digit(operands_copy, 4, lineNumber);
+		number = check_digit(operands_copy, 4, &content->lineNumber, &content->error);
 		if (number == 1){
-			*error = 1;
+			content->error = 1;
 		}
 		if (token != NULL) {token = strtok(NULL, "\n\r");}
 		remove_spaces(token);
-		if (check_digit(token, 5, lineNumber) == 1){
-			*error = 1;
+		if (check_digit(token, 5, &content->lineNumber, &content->error) == 1){
+			content->error = 1;
 		}
 		token = strtok(token, ",");
 		while (matNum <= number) {
 			dec_to_bin(token,name,10);
-			Bin_line(symbol_bin_code, name);
-			(*DC)++;
+			Bin_line(&content->symbol_bin_code, name);
+			(content->DC)++;
 			if (((token = strtok(NULL, ",\n\r\0")) == NULL) && matNum < number){
 				token = "0";
 			}
 			matNum++;
 		}
 		if (number != 1 && token != NULL) {
-			printf("Error: in line %d - There are extra numbers to put in this matrix.\n", lineNumber);
-		*error = 1;
+			printf("Error: in line %d - There are extra numbers to put in this matrix.\n", content->lineNumber);
+		content->error = 1;
 		}
 	}
 	free(name);
 }
 
-int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, char *totalLine, int lineNumber, int *error) {
+/*Count the lines for instruction*/
+int count_words_for_instruction(assembler_context *content) {
 	char *name = (char *)malloc(11 * sizeof(char));
 	int count = 1;
 	int type = -1, mode1 = -1, mode2 = -1;
 	char *operand1 = NULL, *operand2 = NULL, *operandExtra = NULL;
 	char lineCopy[82];
 	name[0] = '\0';
-	strcpy(lineCopy, totalLine);
-	type = opcode(command_name,name);
+	strcpy(lineCopy, content->totalLine);
+	type = opcode(content->command,name);
 	if (type == -1) {
-		printf("Error: in line %d- The command is undefined\n", lineNumber);
-		*error = 1;
+		printf("Error: in line %d- The command is undefined\n", content->lineNumber);
+		content->error = 1;
 	}
 
 	if (strcmp(name,"1110") == 0 || strcmp(name,"1111") == 0) {
 		strcat(name, "000000");
-		Bin_line(symbol_bin_code, name);
+		Bin_line(&content->symbol_bin_code, name);
 	}
 
-	if (totalLine == NULL || strlen(totalLine) == 0) {
+	if (content->totalLine == NULL || strlen(content->totalLine) == 0) {
+		if (type == 1 || type == 2) {
+			printf("Error: in line %d- Missing operands\n", content->lineNumber);
+			content->error = 1;
+		}
 		return count;
 	}
 	if (type == 1) {
@@ -240,7 +251,7 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		operandExtra = strtok(NULL, ",\t\n");
 	}
 	else if (type == 2) {
-		operand1 = strtok(lineCopy, ",");
+		operand1 = strtok(lineCopy, ", \t\n");
 		operand2 = strtok(NULL, ", \t\n");
 		operandExtra = strtok(NULL, ",\t\n");
 	}
@@ -249,8 +260,8 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	}
 
 	if (operandExtra != NULL) {
-		printf("Error: in line %d- There is extra operand\n", lineNumber);
-		*error = 1;
+		printf("Error: in line %d- There is extra operand\n", content->lineNumber);
+		content->error = 1;
 	}
 
 
@@ -258,13 +269,13 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	if (operand1 != NULL) {
 		remove_spaces(operand1);
 		mode1 = get_addressing_mode(operand1);
-		if (check_Addressing_Method(command_name, 1, &mode1) == 1){
-			printf("Error: in line %d- The operand 1 doesn't match the addressing method.\n", lineNumber);
-		*error = 1;
+		if (check_Addressing_Method(content->command, 1, &mode1) == 1){
+			printf("Error: in line %d- The operand 1 doesn't match the addressing method.\n", content->lineNumber);
+		content->error = 1;
 		}
 		if (mode1 == 0){
-			if(check_digit(operand1, 0, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand1, 0, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			strcat(name, "00");
 			count += 1;
@@ -274,15 +285,15 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 			count += 1;
 		}
 		else if (mode1 == 2) {
-			if(check_digit(operand1, 2, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand1, 2, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			strcat(name, "10");
 			count += 2;
 		}
 		else if (mode1 == 3) {
-			if(check_digit(operand1, 3, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand1, 3, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			strcat(name, "11");
 			count += 1;
@@ -296,13 +307,13 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 	if (operand2 != NULL) {
 		remove_spaces(operand2);
 		mode2 = get_addressing_mode(operand2);
-		if (check_Addressing_Method(command_name, 2, &mode2) == 1){
-			printf("Error: in line %d- The operand 2 doesn't match the addressing method.\n", lineNumber);
-		*error = 1;
+		if (check_Addressing_Method(content->command, 2, &mode2) == 1){
+			printf("Error: in line %d- The operand 2 doesn't match the addressing method.\n", content->lineNumber);
+		content->error = 1;
 		}
 		if (mode2 == 0) {
-			if(check_digit(operand2, 0, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand2, 0, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			strcat(name, "00");
 			count += 1;
@@ -312,15 +323,15 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 			count += 1;
 		}
 		else if (mode2 == 2){
-			if(check_digit(operand2, 2, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand2, 2, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			strcat(name, "10");
 			count += 2;
 		}
 		else if (mode2 == 3) {
-			if(check_digit(operand2, 3, lineNumber) == 1){
-				*error = 1;
+			if(check_digit(operand2, 3, &content->lineNumber, &content->error) == 1){
+				content->error = 1;
 			}
 			if (mode2 == 3 && mode1 == 3) {
 				strcat(name, "11");
@@ -336,12 +347,13 @@ int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, ch
 		}
 	}
 	strcat(name, "00");
-	Bin_line(symbol_bin_code, name);
-	if (*error == 0){ check_bin(symbol_bin_code,operand1,operand2);}
+	Bin_line(&content->symbol_bin_code, name);
+	if (content->error == 0){ check_bin(&content->symbol_bin_code,operand1,operand2);}
 	free(name);
 	return count;
 }
 
+/*Check the type operand*/
 int get_addressing_mode(char *operand) {
 	if (operand[0] == '#') {
 		return 0;
@@ -355,6 +367,7 @@ int get_addressing_mode(char *operand) {
 	return 1;
 }
 
+/*Converts words to binary code*/
 char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2) {
 	char *temp = (char *)malloc(11 * sizeof(char));
 	char *name = (char *)malloc(11 * sizeof(char));

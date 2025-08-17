@@ -24,6 +24,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c3f94ef9-7e4d-4cb1-b9b1-0c64790e6100" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/structs.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assembler" beforeDir="false" afterPath="$PROJECT_DIR$/assembler" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/assembler.c" beforeDir="false" afterPath="$PROJECT_DIR$/assembler.c" afterDir="false" />
@@ -37,11 +38,10 @@
       <change beforePath="$PROJECT_DIR$/secondPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.h" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/secondPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/temp_macro.am" beforeDir="false" afterPath="$PROJECT_DIR$/temp_macro.am" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_1.am" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_macro.am" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.as" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.as" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/test_1.ob" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.ob" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/test_1.txt" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_1.txt" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/util.c" beforeDir="false" afterPath="$PROJECT_DIR$/util.c" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/util.o" beforeDir="false" afterPath="$PROJECT_DIR$/util.o" afterDir="false" />
@@ -169,7 +169,7 @@
       <workItem from="1754947432728" duration="6081000" />
       <workItem from="1755014124288" duration="5572000" />
       <workItem from="1755096106615" duration="54719000" />
-      <workItem from="1755284604352" duration="12434000" />
+      <workItem from="1755284604352" duration="78737000" />
     </task>
     <servers />
   </component>

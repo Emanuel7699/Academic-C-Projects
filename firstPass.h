@@ -1,24 +1,6 @@
-typedef struct Label{
-	char name[31];
-	int address;
-	char type[10];      /* "code" or "data"*/
-	char attribute[10]; /* "entry", "external", or ""*/
-	struct Label *next;
-} Label;
-
-typedef struct BinCode{
-	char name[11];
-	struct BinCode *next;
-} BinCode;
-
-typedef struct Ent{
-	char name[31];
-	struct Ent *next;
-} Ent;
-
-int first_pass(char *filename);
-void check_command(Label **head, char *label_name, char *command, int DC, int IC, int *error, int lineNumber);
-void process_data_directive(BinCode **symbol_bin_code, char *directive, char *operands, int *DC, int *error, int lineNumber);
-int count_words_for_instruction(BinCode **symbol_bin_code,char *command_name, char *total_line, int lineNumber, int *error);
+int first_pass(assembler_context *content);
+void check_command(assembler_context *content);
+void process_data_directive(assembler_context *content);
+int count_words_for_instruction(assembler_context *content);
 int get_addressing_mode(char *operand);
 char check_bin(BinCode **symbol_bin_code, char *operand1, char *operand2);
