@@ -1,0 +1,3 @@
+Enter a string: 
+The string is: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+The string is a palindrome.
