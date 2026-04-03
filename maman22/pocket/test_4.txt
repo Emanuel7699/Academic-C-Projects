@@ -1,0 +1,5 @@
+read_mat MAT_A              ,1         ,2,4,5.423                                ,2.54,-999.65
+print_mat MAT_A
+read_mat MAT_A,2,1,4,3,2,S,F,2.37S
+print_mat MAT_A
+stop
