@@ -1,9 +1,0 @@
-read_mat MAT_A,1,2,3,4,5,6,7
-read_mat MAT_B,1,1,1,1,1,1,1,1
-add_mat MAT_A,MAT_B,MAT_A
-print_mat MAT_A
-mul_scalar MAT_B,9,MAT_D
-print_mat MAT_D
-trans_mat MAT_A,MAT_D
-print_mat MAT_D
-stop

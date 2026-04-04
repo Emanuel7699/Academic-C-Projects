@@ -1,3 +1,0 @@
-Enter one number: 
-The number is: "3"
-The count of zero bits is: "30"

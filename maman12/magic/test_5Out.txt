@@ -1,3 +1,0 @@
-Enter 9 numbers:
-
-The number that you set is not an integer number

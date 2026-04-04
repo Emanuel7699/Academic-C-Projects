@@ -1,7 +1,0 @@
-Enter 9 numbers:
-
-The sum of lines is equal
-Matrix:
-1 1 1 
-1 1 1 
-1 1 1 

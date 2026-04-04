@@ -1,3 +1,0 @@
-Enter a string: 
-The string is: "abba"
-The string is a palindrome.

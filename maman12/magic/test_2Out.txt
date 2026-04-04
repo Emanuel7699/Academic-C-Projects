@@ -1,3 +1,0 @@
-Enter 9 numbers:
-
-You entered less than 9 integers.
