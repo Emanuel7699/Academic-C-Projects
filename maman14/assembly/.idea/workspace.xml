@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
+  </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="assembly" targetName="all" />
+      <config projectName="assembly" targetName="assembler" />
+    </generated>
+  </component>
+  <component name="CMakeSettings">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" ENABLED="true" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="c3f94ef9-7e4d-4cb1-b9b1-0c64790e6100" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/structs.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assembler" beforeDir="false" afterPath="$PROJECT_DIR$/assembler" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assembler.c" beforeDir="false" afterPath="$PROJECT_DIR$/assembler.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assembler.h" beforeDir="false" afterPath="$PROJECT_DIR$/assembler.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/assembler.o" beforeDir="false" afterPath="$PROJECT_DIR$/assembler.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firstPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firstPass.h" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/firstPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/firstPass.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macros.c" beforeDir="false" afterPath="$PROJECT_DIR$/macros.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/macros.o" beforeDir="false" afterPath="$PROJECT_DIR$/macros.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/secondPass.c" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/secondPass.h" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/secondPass.o" beforeDir="false" afterPath="$PROJECT_DIR$/secondPass.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/temp_macro.am" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_1.as" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.as" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_1.ob" beforeDir="false" afterPath="$PROJECT_DIR$/test_1.ob" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test_1.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.c" beforeDir="false" afterPath="$PROJECT_DIR$/util.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.h" beforeDir="false" afterPath="$PROJECT_DIR$/util.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/util.o" beforeDir="false" afterPath="$PROJECT_DIR$/util.o" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;Emanuel7699&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/Emanuel7699/assembly.git&quot;,
+    &quot;accountId&quot;: &quot;c43acd77-f9b5-438e-868b-5b5d3497331a&quot;
+  }
+}</component>
+  <component name="MakefileLocalSettings">
+    <option name="availableProjects">
+      <map>
+        <entry>
+          <key>
+            <ExternalProjectPojo>
+              <option name="name" value="assembly" />
+              <option name="path" value="$PROJECT_DIR$" />
+            </ExternalProjectPojo>
+          </key>
+          <value>
+            <list>
+              <ExternalProjectPojo>
+                <option name="name" value="assembly" />
+                <option name="path" value="$PROJECT_DIR$" />
+              </ExternalProjectPojo>
+            </list>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="projectSyncType">
+      <map>
+        <entry key="$PROJECT_DIR$" value="RE_IMPORT" />
+      </map>
+    </option>
+  </component>
+  <component name="MakefilesProjectLoadingState">
+    <option name="doClean" value="false" />
+  </component>
+  <component name="ProjectApplicationVersion">
+    <option name="ide" value="CLion" />
+    <option name="majorVersion" value="2025" />
+    <option name="minorVersion" value="1.4" />
+    <option name="productBranch" value="Classic" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 5
+}</component>
+  <component name="ProjectId" id="316MizoQfQAPEniABE7V5jzVTRx" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Native Application.all.executor&quot;: &quot;Debug&quot;,
+    &quot;RunOnceActivity.RadMigrateCodeStyle&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.readMode.enableVisualFormatting&quot;: &quot;true&quot;,
+    &quot;cf.first.check.clang-format&quot;: &quot;false&quot;,
+    &quot;cidr.known.project.marker&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RunManager" selected="Native Application.all">
+    <configuration name="all" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="assembly" TARGET_NAME="all" CONFIG_NAME="all" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="assembler" type="CLionNativeAppRunConfigurationType" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="assembly" TARGET_NAME="assembler" CONFIG_NAME="assembler" version="1">
+      <method v="2">
+        <option name="CLION.COMPOUND.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Native Application.all" />
+      <item itemvalue="Native Application.assembler" />
+    </list>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c3f94ef9-7e4d-4cb1-b9b1-0c64790e6100" name="Changes" comment="" />
+      <created>1754840200342</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1754840200342</updated>
+      <workItem from="1754840202234" duration="34000" />
+      <workItem from="1754840280252" duration="15982000" />
+      <workItem from="1754924201004" duration="441000" />
+      <workItem from="1754931317933" duration="1401000" />
+      <workItem from="1754947432728" duration="6081000" />
+      <workItem from="1755014124288" duration="5572000" />
+      <workItem from="1755096106615" duration="54719000" />
+      <workItem from="1755284604352" duration="78737000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

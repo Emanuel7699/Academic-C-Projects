@@ -1,0 +1,28 @@
+;"util"
+.entry LOOP
+.entry 
+.extern L3 LabelExtra
+.extern W
+MAIN: mov M1[r2][r7],W
+ add r2,STR
+LOOP: jmp W
+ prn #
+  prn #M
+mcro a_mc
+mov M1[r3][r3,r3
+mov M1[r3]r3],r3
+mov M1[r3[r3],r3
+mov [r3][r3],r3
+mov [r3][r3]M1,r3
+mov M1[r3][r9],r3
+mov M1[2][r3],r3
+ bne LOOP
+mcroend
+ sub r1, r4
+ inc K
+a_mc
+END: stop
+STR: .string "abcdef"
+LENGTH: .data 6,-9,15
+K: .data 22
+M1: .mat [T][G] 1,2,3,4 
