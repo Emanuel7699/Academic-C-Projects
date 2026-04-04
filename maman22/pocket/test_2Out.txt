@@ -1,0 +1,12 @@
+Please enter a command:
+Undefined matrix name
+Please enter a command:
+Extraneous text after end of command
+Please enter a command:
+Matrix:
+   0.00    0.00    0.00    0.00 
+   0.00    0.00    0.00    0.00 
+   0.00    0.00    0.00    0.00 
+   0.00    0.00    0.00    0.00 
+Please enter a command:
+stopped

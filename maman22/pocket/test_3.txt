@@ -1,0 +1,3 @@
+add_mat MAT_A,,MAT_B,MAT_C
+add_mat MAT_A,		MAT_B,MAT_C
+stop

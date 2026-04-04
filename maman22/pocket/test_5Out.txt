@@ -1,0 +1,6 @@
+Please enter a command:
+Undefined command name
+Please enter a command:
+Undefined command name
+Please enter a command:
+error: The program ended without stopped.
